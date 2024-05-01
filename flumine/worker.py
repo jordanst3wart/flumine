@@ -159,7 +159,7 @@ def poll_market_catalogue(context: dict, flumine) -> None:
 def poll_account_balance(context: dict, flumine) -> None:
     for client in flumine.clients:
         client.update_account_details()
-        logger.info("Client update account details", extra=client.info)
+        logger.debug("Client update account details", extra=client.info)
         if client.account_funds:
             flumine.log_control(events.BalanceEvent(client))
 

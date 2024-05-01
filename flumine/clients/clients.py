@@ -71,7 +71,7 @@ class Clients:
     def update_account_details(self) -> None:
         for client in self._clients:
             client.update_account_details()
-            logger.info("Client update account details", extra=client.info)
+            logger.debug("Client update account details", extra=client.info)
 
     @property
     def simulated(self) -> bool:

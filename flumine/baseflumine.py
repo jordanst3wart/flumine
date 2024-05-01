@@ -217,7 +217,7 @@ class BaseFlumine:
         return market
 
     def _remove_market(self, market: Market, clear: bool = True) -> None:
-        logger.info("Removing market %s", market.market_id, extra=self.info)
+        logger.debug("Removing market %s", market.market_id, extra=self.info)
         for middleware in self._market_middleware:
             middleware.remove_market(market)
         for strategy in self.strategies:
@@ -260,7 +260,7 @@ class BaseFlumine:
                     )
                 else:
                     market.market_catalogue = market_catalogue
-                    logger.info(
+                    logger.debug(
                         "Updated marketCatalogue for %s",
                         market.market_id,
                         extra=market.info,
@@ -358,7 +358,7 @@ class BaseFlumine:
                     events.ClearedMarketsEvent(cleared_markets)
                 )
         self.log_control(event)
-        logger.info("Market closed", extra={"market_id": market_id, **self.info})
+        logger.debug("Market closed", extra={"market_id": market_id, **self.info})
 
         # check for markets that have been closed for x seconds and remove
         if not self.clients.simulated:
@@ -387,7 +387,7 @@ class BaseFlumine:
 
         meta_orders = market.blotter.process_cleared_orders(event.event)
         self.log_control(events.ClearedOrdersMetaEvent(meta_orders))
-        logger.info(
+        logger.debug(
             "Market cleared",
             extra={
                 "market_id": market_id,

@@ -50,7 +50,7 @@ class Market:
         self.closed = False
         self.orders_cleared = []
         self.market_cleared = []
-        logger.info(
+        logger.debug(
             "Market %s opened",
             self.market_id,
             extra=self.info,
@@ -59,7 +59,7 @@ class Market:
     def close_market(self) -> None:
         self.closed = True
         self.date_time_closed = datetime.datetime.utcnow()
-        logger.info(
+        logger.debug(
             "Market %s closed",
             self.market_id,
             extra=self.info,

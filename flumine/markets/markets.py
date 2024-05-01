@@ -34,7 +34,7 @@ class Markets:
             if market in self.events[event_id]:
                 self.events[event_id].remove(market)
         del market
-        logger.info(
+        logger.debug(
             "Market removed",
             extra={"market_id": market_id, "event_id": event_id},
         )
