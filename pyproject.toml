@@ -1,3 +1,6 @@
+[tool.poetry]
+name = "flumine"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
