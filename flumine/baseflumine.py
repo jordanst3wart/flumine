@@ -38,6 +38,7 @@ class BaseFlumine:
 
         :param client: flumine client instance
         """
+        logger.info("Running custom flumine")
         self._running = False
         # streams (market/order)
         self.streams = Streams(self)
