@@ -424,6 +424,7 @@ class BaseFlumine:
             "streams": [s for s in self.streams],
             "logging_controls": self._logging_controls,
             "threads": threading.enumerate(),
+            "threads_len": len(threading.enumerate()),
         }
 
     def __enter__(self):
