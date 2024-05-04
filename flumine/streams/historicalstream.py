@@ -57,7 +57,7 @@ class FlumineMarketStream(MarketStream):
                     self._cumulative_runner_tv,
                 )
                 self._caches[market_id] = market_book_cache
-                logger.info(
+                logger.debug(
                     "[%s: %s]: %s added, %s markets in cache",
                     self,
                     self.unique_id,
@@ -122,7 +122,7 @@ class FlumineRaceStream(RaceStream):
                 race_cache.start_time = create_time(publish_time, race_id)
                 race_cache.inplay = False
                 self._caches[market_id] = race_cache
-                logger.info(
+                logger.debug(
                     "[%s: %s]: %s added, %s markets in cache",
                     self,
                     self.unique_id,
@@ -174,7 +174,7 @@ class FlumineCricketStream(CricketStream):
                     market_id, event_id, publish_time, self._lightweight
                 )
                 self._caches[market_id] = cricket_match_cache
-                logger.info(
+                logger.debug(
                     "[%s: %s]: %s added, %s markets in cache",
                     self,
                     self.unique_id,

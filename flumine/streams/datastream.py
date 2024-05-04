@@ -55,7 +55,7 @@ class FlumineMarketStream(FlumineStream):
                 if market_id in self._caches:
                     # removes closed market from cache
                     del self._caches[market_id]
-                    logger.info(
+                    logger.debug(
                         "[MarketStream: %s] %s removed, %s markets in cache",
                         self.unique_id,
                         market_id,
@@ -64,7 +64,7 @@ class FlumineMarketStream(FlumineStream):
             elif market_id not in self._caches:
                 # adds empty object to cache to track live market count
                 self._caches[market_id] = object()
-                logger.info(
+                logger.debug(
                     "[MarketStream: %s] %s added, %s markets in cache",
                     self.unique_id,
                     market_id,
@@ -85,7 +85,7 @@ class FlumineOrderStream(FlumineStream):
             if market_id not in self._caches:
                 # adds empty object to cache to track live market count
                 self._caches[market_id] = object()
-                logger.info(
+                logger.debug(
                     "[OrderStream: %s] %s added, %s markets in cache",
                     self.unique_id,
                     market_id,
@@ -106,7 +106,7 @@ class FlumineRaceStream(FlumineStream):
             if market_id not in self._caches:
                 # adds empty object to cache to track live market count
                 self._caches[market_id] = object()
-                logger.info(
+                logger.debug(
                     "[RaceStream: %s] %s added, %s markets in cache",
                     self.unique_id,
                     market_id,
@@ -127,7 +127,7 @@ class FlumineCricketStream(FlumineStream):
             if market_id not in self._caches:
                 # adds empty object to cache to track live market count
                 self._caches[market_id] = object()
-                logger.info(
+                logger.debug(
                     "[CricketStream: %s] %s added, %s markets in cache",
                     self.unique_id,
                     market_id,
