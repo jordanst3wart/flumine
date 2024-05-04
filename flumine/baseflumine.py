@@ -210,7 +210,7 @@ class BaseFlumine:
         order_package.client.execution.handler(order_package)
 
     def _add_market(self, market_id: str, market_book: resources.MarketBook) -> Market:
-        logger.info("Adding: %s to markets", market_id)
+        logger.debug("Adding: %s to markets", market_id)
         market = Market(self, market_id, market_book)
         self.markets.add_market(market_id, market)
         for middleware in self._market_middleware:
@@ -254,7 +254,7 @@ class BaseFlumine:
                 if market.market_catalogue is None:
                     market.market_catalogue = market_catalogue
                     self.log_control(events.MarketEvent(market))
-                    logger.info(
+                    logger.debug(
                         "Created marketCatalogue for %s",
                         market.market_id,
                         extra=market.info,
