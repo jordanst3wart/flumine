@@ -6,7 +6,6 @@ Flumine is capable of using multiple clients, these can be of the same `Exchange
 
 - BETFAIR: `BetfairClient`
 - SIMULATED: `SimulatedClient`
-- BETCONNECT: `BetconnectClient`
 
 ## Strategy use
 
