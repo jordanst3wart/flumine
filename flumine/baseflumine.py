@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseFlumine:
-    SIMULATED = False
+    SIMULATED = False  # probably don't need
 
     def __init__(self, client: BaseClient = None):
         """
@@ -40,42 +40,28 @@ class BaseFlumine:
         """
         logger.info("Running custom flumine")
         self._running = False
-        # streams (market/order)
         self.streams = Streams(self)
 
         self.clients = Clients()
-
-        # FIFO queue
         self.handler_queue = queue.Queue()
-
-        # markets
         self.markets = Markets()
-
-        # middleware
         self._market_middleware = []
-
-        # strategies
         self.strategies = Strategies()
 
         # order execution class
         self.simulated_execution = SimulatedExecution(self)
         self.betfair_execution = BetfairExecution(self)
 
-        # add client
         if client:
             self.add_client(client)
 
-        # logging controls (e.g. database logger)
         self._logging_controls = []
 
-        # trading controls
         self.trading_controls = []
-        # add default controls (processed in order)
         self.add_trading_control(OrderValidation)
         self.add_trading_control(MarketValidation)
         self.add_trading_control(StrategyExposure)
 
-        # workers
         self._workers = []
 
     def run(self) -> None:
@@ -178,6 +164,7 @@ class BaseFlumine:
                         )
 
     def _process_sports_data(self, event: events.SportsDataEvent) -> None:
+        logger.info("sport data event actually called")
         for sports_data in event.event:
             if hasattr(sports_data, "event_id"):
                 # get eventId
@@ -227,6 +214,7 @@ class BaseFlumine:
             self.markets.remove_market(market.market_id)
 
     def _process_raw_data(self, event: events.RawDataEvent) -> None:
+        logger.info("raw data event actually called")
         stream_id, clk, publish_time, data = event.event
         for datum in data:
             if "id" in datum:
@@ -294,6 +282,7 @@ class BaseFlumine:
                         )
 
     def _process_custom_event(self, event: events.CustomEvent) -> None:
+        logger.info("custom event actually called")
         try:
             event.callback(self, event)
         except FlumineException as e:
