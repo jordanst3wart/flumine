@@ -236,6 +236,7 @@ class BaseFlumine:
                     utils.call_process_raw_data(strategy, clk, publish_time, datum)
 
     def _process_market_catalogues(self, event: events.MarketCatalogueEvent) -> None:
+        logger.info("market catalogue event actually called")
         for market_catalogue in event.event:
             market = self.markets.markets.get(market_catalogue.market_id)
             if market:
@@ -267,6 +268,7 @@ class BaseFlumine:
                         )
 
     def _process_current_orders(self, event: events.CurrentOrdersEvent) -> None:
+        logger.info("current orders event actually called")
         # update state
         if event.event:
             process_current_orders(
@@ -303,6 +305,7 @@ class BaseFlumine:
                 raise
 
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
+        logger.info("close market event actually called")
         market_book = event.event
         if isinstance(market_book, dict):
             recorder = True
