@@ -33,7 +33,7 @@ class Flumine(BaseFlumine):
             CLEARED_MARKETS_EVENT: self._process_cleared_markets,
             CLEARED_ORDERS_EVENT: self._process_cleared_orders,
             CLOSE_MARKET_EVENT: self._process_close_market,
-            TERMINATOR_EVENT: "break"
+            TERMINATOR_EVENT: "break",
         }
 
         with self:

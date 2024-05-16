@@ -403,4 +403,3 @@ class SimulatedClientTest(unittest.TestCase):
             self.simulated_client.username,
             self.simulated_client._username,
         )
-
