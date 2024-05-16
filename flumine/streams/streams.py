@@ -23,7 +23,8 @@ class Streams:
         self._stream_id = 0
 
     def __call__(self, strategy: BaseStrategy) -> None:
-        if self.flumine.SIMULATED:
+        if self.flumine.SIMULATED:  # probably don't need this
+            logger.info("actually need simulated stream thing")
             markets = strategy.market_filter.get("markets")
             market_types = strategy.market_filter.get("market_types")
             country_codes = strategy.market_filter.get("country_codes")

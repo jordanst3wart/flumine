@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 class ExchangeType(Enum):
     BETFAIR = "Betfair"
-    SIMULATED = "Simulated"
-    BETCONNECT = "BetConnect"
+    SIMULATED = "Simulated"  # could remove
+    BETCONNECT = "BetConnect"  # could remove
 
 
 class Clients:
