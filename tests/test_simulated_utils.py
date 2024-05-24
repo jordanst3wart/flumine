@@ -40,4 +40,4 @@ class SimulatedDateTimeTest(unittest.TestCase):
             self.assertEqual(datetime.utcnow(), 456)
         import datetime
 
-        self.assertIsInstance(datetime.datetime.utcnow(), datetime.datetime)
+        self.assertIsInstance(datetime.datetime.now(datetime.UTC), datetime.datetime)

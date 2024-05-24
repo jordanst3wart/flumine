@@ -43,9 +43,6 @@ class TransactionTest(unittest.TestCase):
             None,
             False,
         )
-        self.transaction.market.flumine.log_control.assert_called_with(
-            mock_events.TradeEvent()
-        )
         mock_get_market_notes.assert_called_with(
             self.mock_market, mock_order.selection_id
         )
@@ -78,9 +75,6 @@ class TransactionTest(unittest.TestCase):
             self.transaction.market.market_book.publish_time,
             None,
             False,
-        )
-        self.transaction.market.flumine.log_control.assert_called_with(
-            mock_events.TradeEvent()
         )
         mock__validate_controls.assert_not_called()
         self.transaction._pending_place = []

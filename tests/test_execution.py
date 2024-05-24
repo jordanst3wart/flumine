@@ -163,7 +163,6 @@ class BaseExecutionTest(unittest.TestCase):
         )
         self.assertEqual(mock_order.bet_id, mock_instruction_report.bet_id)
         mock_order.responses.placed.assert_called_with(mock_instruction_report, dt=True)
-        self.mock_flumine.log_control.assert_called_with(mock_order_event(mock_order))
 
     @mock.patch("flumine.execution.baseexecution.OrderEvent")
     def test__order_logger_place_async(self, mock_order_event):
@@ -176,7 +175,6 @@ class BaseExecutionTest(unittest.TestCase):
         mock_order.responses.placed.assert_called_with(
             mock_instruction_report, dt=False
         )
-        self.mock_flumine.log_control.assert_called_with(mock_order_event(mock_order))
 
     @mock.patch("flumine.execution.baseexecution.OrderEvent")
     def test__order_logger_place_async_simulated(self, mock_order_event):
@@ -187,7 +185,6 @@ class BaseExecutionTest(unittest.TestCase):
         )
         self.assertEqual(mock_order.bet_id, mock_instruction_report.bet_id)
         mock_order.responses.placed.assert_called_with(mock_instruction_report, dt=True)
-        self.mock_flumine.log_control.assert_called_with(mock_order_event(mock_order))
 
     def test__order_logger_place_no_bet_id(self):
         mock_order = mock.Mock(bet_id=123, async_=False)
@@ -197,7 +194,6 @@ class BaseExecutionTest(unittest.TestCase):
         )
         self.assertEqual(mock_order.bet_id, 123)
         mock_order.responses.placed.assert_called_with(mock_instruction_report, dt=True)
-        self.mock_flumine.log_control.assert_not_called()
 
     def test__order_logger_cancel(self):
         mock_order = mock.Mock()
@@ -224,7 +220,6 @@ class BaseExecutionTest(unittest.TestCase):
         )
         self.assertEqual(mock_order.bet_id, mock_instruction_report.bet_id)
         mock_order.responses.placed.assert_called_with(mock_instruction_report)
-        self.mock_flumine.log_control.assert_called_with(mock_order_event(mock_order))
 
     def test_shutdown(self):
         self.execution.shutdown()

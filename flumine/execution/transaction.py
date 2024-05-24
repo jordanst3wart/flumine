@@ -74,8 +74,6 @@ class Transaction:
                 order.trade.market_notes = market_notes
         else:
             raise OrderError("Order %s has already been placed" % order.id)
-        if new_trade:
-            self.market.flumine.log_control(events.TradeEvent(order.trade))
         if execute:  # handles replaceOrder
             runner_context = order.trade.strategy.get_runner_context(*order.lookup)
             runner_context.place(order.trade.id)

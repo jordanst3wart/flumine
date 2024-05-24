@@ -37,12 +37,14 @@ class BaseEvent:
     __slots__ = ["_time_created", "event", "callback"]
 
     def __init__(self, event):
-        self._time_created = datetime.datetime.utcnow()
+        self._time_created = datetime.datetime.now(datetime.UTC)
         self.event = event
 
     @property
     def elapsed_seconds(self):
-        return (datetime.datetime.utcnow() - self._time_created).total_seconds()
+        return (
+            datetime.datetime.now(datetime.UTC) - self._time_created
+        ).total_seconds()
 
     def __str__(self):
         return "<{0} [{1}]>".format(self.EVENT_TYPE.name, self.QUEUE_TYPE.name)

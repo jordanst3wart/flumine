@@ -281,7 +281,9 @@ class MarketTest(unittest.TestCase):
     def test_seconds_to_start(self):
         self.market.market_book = None
         mock_market_catalogue = mock.Mock()
-        mock_market_catalogue.market_start_time = datetime.datetime.utcfromtimestamp(1)
+        mock_market_catalogue.market_start_time = datetime.datetime.fromtimestamp(
+            1, datetime.UTC
+        )
         self.market.market_catalogue = mock_market_catalogue
         self.assertLess(self.market.seconds_to_start, 0)
 
@@ -289,14 +291,14 @@ class MarketTest(unittest.TestCase):
         self.market.market_catalogue = None
         mock_market_book = mock.Mock()
         mock_market_book.market_definition.market_time = (
-            datetime.datetime.utcfromtimestamp(1)
+            datetime.datetime.fromtimestamp(1, datetime.UTC)
         )
         self.market.market_book = mock_market_book
         self.assertLess(self.market.seconds_to_start, 0)
 
     def test_seconds_to_start_market_catalogue(self):
         self.market.market_book.market_definition.market_time = (
-            datetime.datetime.utcfromtimestamp(1)
+            datetime.datetime.fromtimestamp(1, datetime.UTC)
         )
         self.assertLess(self.market.seconds_to_start, 0)
 
@@ -308,7 +310,7 @@ class MarketTest(unittest.TestCase):
     def test_elapsed_seconds_closed(self):
         self.assertIsNone(self.market.elapsed_seconds_closed)
         self.market.closed = True
-        self.market.date_time_closed = datetime.datetime.utcnow()
+        self.market.date_time_closed = datetime.datetime.now(datetime.UTC)
         self.assertGreaterEqual(self.market.elapsed_seconds_closed, 0)
 
     def test_market_start_datetime(self):
@@ -323,7 +325,8 @@ class MarketTest(unittest.TestCase):
         )
         self.market.market_catalogue = None
         self.assertEqual(
-            self.market.market_start_datetime, datetime.datetime.utcfromtimestamp(0)
+            self.market.market_start_datetime,
+            datetime.datetime.fromtimestamp(0, datetime.UTC),
         )
 
     @mock.patch(
@@ -333,8 +336,8 @@ class MarketTest(unittest.TestCase):
     )
     def test_market_start_hour_minute(self, mock_market_start_datetime):
         self.assertIsNone(self.market.market_start_hour_minute)
-        mock_market_start_datetime.return_value = datetime.datetime.utcfromtimestamp(
-            12000000000
+        mock_market_start_datetime.return_value = datetime.datetime.fromtimestamp(
+            12000000000, datetime.UTC
         )
         self.assertEqual(self.market.market_start_hour_minute, "2120")
 

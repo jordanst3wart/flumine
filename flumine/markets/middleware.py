@@ -23,6 +23,7 @@ LIVE_STATUS = [
 ]
 
 
+# TODO remove Middleware
 class Middleware:
     def __call__(self, market) -> None:
         pass

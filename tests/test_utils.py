@@ -373,5 +373,6 @@ class UtilsTest(unittest.TestCase):
 
     def test_create_time(self):
         self.assertEqual(
-            utils.create_time(123, "12345.1310"), datetime.datetime(1970, 1, 1, 13, 10)
+            utils.create_time(123, "12345.1310"),
+            datetime.datetime(1970, 1, 1, 13, 10, tzinfo=datetime.timezone.utc),
         )

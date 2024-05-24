@@ -4,7 +4,6 @@ from typing import Optional, Union, Iterator
 
 from ..strategy.strategy import BaseStrategy
 from .marketstream import MarketStream
-from .sportsdatastream import SportsDataStream
 from .datastream import DataStream
 from .historicalstream import HistoricalStream
 from .orderstream import OrderStream
@@ -123,38 +122,6 @@ class Streams:
                     market_data_filter=strategy.market_data_filter,
                     streaming_timeout=strategy.streaming_timeout,
                     conflate_ms=strategy.conflate_ms,
-                )
-                self._streams.append(stream)
-                strategy.streams.append(stream)
-        # sports data
-        for subscription in strategy.sports_data_filter:
-            for stream in self:  # check if sports data stream already exists
-                if (
-                    isinstance(stream, SportsDataStream)
-                    and stream.sports_data_filter == subscription
-                    and stream.streaming_timeout == strategy.streaming_timeout
-                ):
-                    logger.info(
-                        "Using %s (%s) for strategy %s",
-                        strategy.stream_class,
-                        stream.stream_id,
-                        strategy,
-                    )
-                    strategy.streams.append(stream)
-                    break
-            else:  # nope? lets create a new one
-                stream_id = self._increment_stream_id()
-                logger.info(
-                    "Creating new %s (%s) for strategy %s",
-                    strategy.stream_class,
-                    stream_id,
-                    strategy,
-                )
-                stream = SportsDataStream(
-                    flumine=self.flumine,
-                    stream_id=stream_id,
-                    sports_data_filter=subscription,
-                    streaming_timeout=strategy.streaming_timeout,
                 )
                 self._streams.append(stream)
                 strategy.streams.append(stream)
