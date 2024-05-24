@@ -84,7 +84,9 @@ class FlumineMarketStream(MarketStream):
                     if not _definition_in_play:
                         active = False
                 elif self._listener.seconds_to_start:
-                    _now = datetime.datetime.fromtimestamp(publish_time / 1e3, datetime.UTC)
+                    _now = datetime.datetime.fromtimestamp(
+                        publish_time / 1e3, datetime.UTC
+                    )
                     _market_time = BaseResource.strip_datetime(_definition_market_time)
                     _market_time = _market_time.replace(tzinfo=pytz.UTC)
                     seconds_to_start = (_market_time - _now).total_seconds()
@@ -100,6 +102,7 @@ class FlumineMarketStream(MarketStream):
             market_book_cache.update_cache(market_book, publish_time, active=active)
             self._updates_processed += 1
         return active
+
 
 class HistoricListener(StreamListener):
     """

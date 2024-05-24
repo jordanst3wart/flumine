@@ -96,7 +96,7 @@ class BaseOrder:
         self.market_version = None  # marketBook.version
         self.async_ = None
 
-        self.date_time_created =  datetime.datetime.now(datetime.UTC)
+        self.date_time_created = datetime.datetime.now(datetime.UTC)
         self.date_time_execution_complete = None
 
         self.cleared_order = None
@@ -123,7 +123,7 @@ class BaseOrder:
 
     def execution_complete(self) -> None:
         self._update_status(OrderStatus.EXECUTION_COMPLETE)
-        self.date_time_execution_complete =  datetime.datetime.now(datetime.UTC)
+        self.date_time_execution_complete = datetime.datetime.now(datetime.UTC)
         self.update_data.clear()
 
     def cancelling(self) -> None:
@@ -236,13 +236,17 @@ class BaseOrder:
     def elapsed_seconds(self) -> Optional[float]:
         date_time_placed = self.responses.date_time_placed
         if date_time_placed:
-            return (datetime.datetime.now(datetime.UTC) - date_time_placed).total_seconds()
+            return (
+                datetime.datetime.now(datetime.UTC) - date_time_placed
+            ).total_seconds()
         else:
             return
 
     @property
     def elapsed_seconds_created(self) -> float:
-        return (datetime.datetime.now(datetime.UTC) - self.date_time_created).total_seconds()
+        return (
+            datetime.datetime.now(datetime.UTC) - self.date_time_created
+        ).total_seconds()
 
     @property
     def elapsed_seconds_executable(self) -> Optional[float]:

@@ -55,7 +55,8 @@ class BaseOrderTest(unittest.TestCase):
             add_market=mock_add_market,
         )
         mock_process_current_order.assert_called_with(
-            betfair_order, current_order,
+            betfair_order,
+            current_order,
         )
         self.assertEqual(market.blotter._live_orders, [])
 

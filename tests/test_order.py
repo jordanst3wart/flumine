@@ -248,7 +248,7 @@ class BaseOrderTest(unittest.TestCase):
     def test_elapsed_seconds(self):
         self.assertIsNone(self.order.elapsed_seconds)
         mock_responses = mock.Mock()
-        mock_responses.date_time_placed =  datetime.datetime.now(datetime.UTC)
+        mock_responses.date_time_placed = datetime.datetime.now(datetime.UTC)
         self.order.responses = mock_responses
         self.assertGreaterEqual(self.order.elapsed_seconds, 0)
 
@@ -258,9 +258,9 @@ class BaseOrderTest(unittest.TestCase):
     def test_elapsed_seconds_executable(self):
         self.assertIsNone(self.order.elapsed_seconds_executable)
         mock_responses = mock.Mock()
-        mock_responses.date_time_placed =  datetime.datetime.now(datetime.UTC)
+        mock_responses.date_time_placed = datetime.datetime.now(datetime.UTC)
         self.order.responses = mock_responses
-        self.order.date_time_execution_complete =  datetime.datetime.now(datetime.UTC)
+        self.order.date_time_execution_complete = datetime.datetime.now(datetime.UTC)
         self.assertGreaterEqual(self.order.elapsed_seconds_executable, 0)
 
     def test_profit(self):

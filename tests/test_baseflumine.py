@@ -363,9 +363,7 @@ class BaseFlumineTest(unittest.TestCase):
         )
 
     @mock.patch("flumine.baseflumine.events")
-    def test__process_market_catalogues_missing_book(
-        self, mock_events
-    ):
+    def test__process_market_catalogues_missing_book(self, mock_events):
         # Matches by stream id
         mock_strategy_1 = mock.Mock(stream_ids=[1, 2])
         mock_strategy_1.market_cached.return_value = True

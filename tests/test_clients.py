@@ -102,7 +102,7 @@ class ClientsTest(unittest.TestCase):
             self.clients.info,
             {
                 ExchangeType.BETFAIR.value: {"james": mock_client.info},
-                ExchangeType.SIMULATED.value: {}
+                ExchangeType.SIMULATED.value: {},
             },
         )
 

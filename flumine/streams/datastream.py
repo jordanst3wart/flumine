@@ -92,6 +92,7 @@ class FlumineOrderStream(FlumineStream):
         self.on_process([self.unique_id, self._clk, publish_time, data])
         return False
 
+
 class DataStream(BaseStream):
     LISTENER = FlumineListener
 

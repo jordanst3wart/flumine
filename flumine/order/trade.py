@@ -45,7 +45,7 @@ class Trade:
         self.offset_orders = []  # pending offset orders once initial order has matched
         self.status_log = []
         self.status = TradeStatus.LIVE
-        self.date_time_created =  datetime.datetime.now(datetime.UTC)
+        self.date_time_created = datetime.datetime.now(datetime.UTC)
         self.date_time_complete = None
 
     # status
@@ -59,7 +59,7 @@ class Trade:
 
     def complete_trade(self) -> None:
         self._update_status(TradeStatus.COMPLETE)
-        self.date_time_complete =  datetime.datetime.now(datetime.UTC)
+        self.date_time_complete = datetime.datetime.now(datetime.UTC)
         # reset strategy context
         runner_context = self.strategy.get_runner_context(
             self.market_id, self.selection_id, self.handicap

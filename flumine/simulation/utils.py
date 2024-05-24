@@ -29,7 +29,7 @@ class SimulatedDateTime:
             datetime.datetime = NewDateTime
 
     def __enter__(self):
-        config.current_time =  datetime.datetime.now(datetime.UTC)
+        config.current_time = datetime.datetime.now(datetime.UTC)
         self._real_datetime = datetime.datetime
         datetime.datetime = NewDateTime
         return datetime.datetime
