@@ -22,7 +22,6 @@ from .controls.tradingcontrols import (
     StrategyExposure,
     MarketValidation,
 )
-from .controls.loggingcontrols import LoggingControl
 from .exceptions import FlumineException, ClientError
 from . import config, utils
 
@@ -54,8 +53,6 @@ class BaseFlumine:
 
         if client:
             self.add_client(client)
-
-        self._logging_controls = []
 
         self.trading_controls = []
         self.add_trading_control(OrderValidation)
@@ -103,14 +100,6 @@ class BaseFlumine:
     def add_market_middleware(self, middleware: Middleware) -> None:
         logger.info("Adding market middleware %s", middleware)
         self._market_middleware.append(middleware)
-
-    def add_logging_control(self, logging_control: LoggingControl) -> None:
-        logger.info("Adding logging control %s", logging_control.NAME)
-        self._logging_controls.append(logging_control)
-
-    def log_control(self, event: events.BaseEvent) -> None:
-        for logging_control in self._logging_controls:
-            logging_control.logging_queue.put(event)
 
     def _add_default_workers(self) -> None:
         return
@@ -414,7 +403,6 @@ class BaseFlumine:
                 "open_market_count": len(self.markets.open_market_ids),
             },
             "streams": [s for s in self.streams],
-            "logging_controls": self._logging_controls,
             "threads": threading.enumerate(),
             "threads_len": len(threading.enumerate()),
         }
@@ -435,11 +423,6 @@ class BaseFlumine:
         self._add_default_workers()
         for w in self._workers:
             w.start()
-        # start logging controls
-        for c in self._logging_controls:
-            c.start()
-        # process config (logging)
-        self.log_control(events.ConfigEvent(config))
         # start strategies
         self.strategies.start(self)
         # start streams
@@ -458,11 +441,6 @@ class BaseFlumine:
         # shutdown thread pools
         self.simulated_execution.shutdown()
         self.betfair_execution.shutdown()
-        # shutdown logging controls
-        self.log_control(events.TerminationEvent(self))
-        for c in self._logging_controls:
-            if c.is_alive():
-                c.join()
         # logout
         self.clients.logout()
         self._running = False

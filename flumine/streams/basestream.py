@@ -21,7 +21,6 @@ class BaseStream(threading.Thread):
         conflate_ms: int = None,
         market_filter: dict = None,
         market_data_filter: dict = None,
-        sports_data_filter: str = None,
         custom: bool = False,
         client=None,
         output_queue: bool = True,
@@ -35,7 +34,6 @@ class BaseStream(threading.Thread):
         self.stream_id = stream_id
         self.market_filter = market_filter
         self.market_data_filter = market_data_filter
-        self.sports_data_filter = sports_data_filter
         self.streaming_timeout = streaming_timeout
         self.conflate_ms = conflate_ms
         self._client = client

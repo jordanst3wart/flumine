@@ -24,17 +24,5 @@ transaction.place_order(order, force=True)
 
 This works for markets and transactions and is supported by the operations `place_order`, `cancel_order`, `update_order`, and `replace_order`.
 
-## Logging Controls
-
-Custom logging is available using the `LoggingControl` class, the [base class](https://github.com/betcode-org/flumine/blob/master/flumine/controls/loggingcontrols.py#L12) creates debug logs and can be used as follows:
-
-```python
-from flumine.controls.loggingcontrols import LoggingControl
-
-control = LoggingControl()
-
-framework.add_logging_control(control)
-```
-
 !!! tip
     More than one control can be added, for example a csv logger and db logger.

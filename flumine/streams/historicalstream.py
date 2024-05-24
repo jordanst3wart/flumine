@@ -102,92 +102,6 @@ class FlumineMarketStream(MarketStream):
             self._updates_processed += 1
         return active
 
-
-class FlumineRaceStream(RaceStream):
-    """
-    `_process` updated to not call `on_process`
-    which reduces some function calls.
-    """
-
-    def _process(self, race_updates: list, publish_time: int) -> bool:
-        active = False
-        for update in race_updates:
-            market_id = update["mid"]
-            race_cache = self._caches.get(market_id)
-            if race_cache is None:
-                race_id = update.get("id")
-                race_cache = RaceCache(
-                    market_id, publish_time, race_id, self._lightweight
-                )
-                race_cache.start_time = create_time(publish_time, race_id)
-                race_cache.inplay = False
-                self._caches[market_id] = race_cache
-                logger.debug(
-                    "[%s: %s]: %s added, %s markets in cache",
-                    self,
-                    self.unique_id,
-                    market_id,
-                    len(self._caches),
-                )
-
-            if race_cache.inplay:
-                race_cache.update_cache(update, publish_time)
-                self._updates_processed += 1
-                active = True
-            else:
-                # filter after start time
-                diff = (
-                    race_cache.start_time
-                    - datetime.datetime.utcfromtimestamp(publish_time / 1e3)
-                ).total_seconds()
-                # handle US races starting early by checking the update
-                if diff <= 0 or (
-                    "rpc" in update
-                    and (
-                        update["rpc"]["rt"]
-                        or update["rpc"]["spd"]
-                        or update["rpc"]["ord"]
-                    )
-                ):
-                    race_cache.inplay = True
-                    race_cache.update_cache(update, publish_time)
-                    self._updates_processed += 1
-                    active = True
-        return active
-
-
-class FlumineCricketStream(CricketStream):
-    """
-    `_process` updated to not call `on_process`
-    which reduces some function calls.
-    """
-
-    def _process(self, cricket_changes: list, publish_time: int) -> bool:
-        caches = []
-        for cricket_change in cricket_changes:
-            market_id = cricket_change["marketId"]
-            event_id = cricket_change["eventId"]
-            cricket_match_cache = self._caches.get(market_id)
-
-            if cricket_match_cache is None:
-                cricket_match_cache = CricketMatchCache(
-                    market_id, event_id, publish_time, self._lightweight
-                )
-                self._caches[market_id] = cricket_match_cache
-                logger.debug(
-                    "[%s: %s]: %s added, %s markets in cache",
-                    self,
-                    self.unique_id,
-                    market_id,
-                    len(self._caches),
-                )
-
-            cricket_match_cache.update_cache(cricket_change, publish_time)
-            caches.append(cricket_match_cache)
-            self._updates_processed += 1
-        return True
-
-
 class HistoricListener(StreamListener):
     """
     Custom listener to restrict processing by
@@ -204,10 +118,6 @@ class HistoricListener(StreamListener):
             return FlumineMarketStream(self, unique_id)
         elif operation == "orderSubscription":
             raise ListenerError("Unable to process order stream")
-        elif operation == "raceSubscription":
-            return FlumineRaceStream(self, unique_id)
-        elif operation == "cricketSubscription":
-            return FlumineCricketStream(self, unique_id)
         else:
             raise ListenerError("Unable to process '{0}' stream".format(operation))
 
