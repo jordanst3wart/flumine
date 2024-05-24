@@ -30,7 +30,7 @@ class Market:
         self.flumine = flumine
         self.market_id = market_id
         self.closed = False
-        self.date_time_created = datetime.datetime.utcnow()
+        self.date_time_created =  datetime.datetime.now(datetime.UTC)
         self.date_time_closed = None
         self.market_book = market_book
         self.market_catalogue = market_catalogue
@@ -58,7 +58,7 @@ class Market:
 
     def close_market(self) -> None:
         self.closed = True
-        self.date_time_closed = datetime.datetime.utcnow()
+        self.date_time_closed =  datetime.datetime.now(datetime.UTC)
         logger.debug(
             "Market %s closed",
             self.market_id,
@@ -144,12 +144,12 @@ class Market:
 
     @property
     def seconds_to_start(self) -> float:
-        return (self.market_start_datetime - datetime.datetime.utcnow()).total_seconds()
+        return (self.market_start_datetime - datetime.datetime.now(datetime.UTC)).total_seconds()
 
     @property
     def elapsed_seconds_closed(self) -> Optional[float]:
         if self.closed and self.date_time_closed:
-            return (datetime.datetime.utcnow() - self.date_time_closed).total_seconds()
+            return ( datetime.datetime.now(datetime.UTC) - self.date_time_closed).total_seconds()
 
     @property
     def market_start_datetime(self):
@@ -158,7 +158,7 @@ class Market:
         elif self.market_catalogue:
             return self.market_catalogue.market_start_time
         else:
-            return datetime.datetime.utcfromtimestamp(0)
+            return datetime.datetime.fromtimestamp(0, datetime.UTC)
 
     @property
     def market_start_hour_minute(self) -> Optional[str]:

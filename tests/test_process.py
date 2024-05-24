@@ -28,7 +28,6 @@ class BaseOrderTest(unittest.TestCase):
 
     @mock.patch("flumine.order.process.process_current_order")
     def test_process_current_orders_with_default_sep(self, mock_process_current_order):
-        mock_log_control = mock.Mock()
         mock_add_market = mock.Mock()
         market_book = mock.Mock()
         markets = Markets()
@@ -53,11 +52,10 @@ class BaseOrderTest(unittest.TestCase):
             markets=markets,
             strategies=strategies,
             event=event,
-            log_control=mock_log_control,
             add_market=mock_add_market,
         )
         mock_process_current_order.assert_called_with(
-            betfair_order, current_order, mock_log_control
+            betfair_order, current_order,
         )
         self.assertEqual(market.blotter._live_orders, [])
 
@@ -65,8 +63,7 @@ class BaseOrderTest(unittest.TestCase):
         mock_order = mock.Mock(status=OrderStatus.EXECUTABLE)
         mock_order.current_order.status = "EXECUTION_COMPLETE"
         mock_current_order = mock.Mock()
-        mock_log_control = mock.Mock()
-        process.process_current_order(mock_order, mock_current_order, mock_log_control)
+        process.process_current_order(mock_order, mock_current_order)
         mock_order.update_current_order.assert_called_with(mock_current_order)
         mock_order.execution_complete.assert_called()
 
@@ -75,14 +72,12 @@ class BaseOrderTest(unittest.TestCase):
         mock_order = mock.Mock(status=OrderStatus.EXECUTABLE, async_=True, bet_id=None)
         mock_order.current_order.status = "EXECUTION_COMPLETE"
         mock_current_order = mock.Mock(bet_id=1234)
-        mock_log_control = mock.Mock()
-        process.process_current_order(mock_order, mock_current_order, mock_log_control)
+        process.process_current_order(mock_order, mock_current_order)
         mock_order.update_current_order.assert_called_with(mock_current_order)
         mock_order.execution_complete.assert_called()
         self.assertEqual(mock_order.bet_id, 1234)
         mock_order.responses.placed.assert_called_with()
-        mock_order_event.assert_called_with(mock_order)
-        mock_log_control.assert_called_with(mock_order_event())
+        # mock_order_event.assert_called_with(mock_order)
 
     def test_create_order_from_current(self):
         mock_add_market = mock.Mock()

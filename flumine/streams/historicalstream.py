@@ -6,15 +6,13 @@ from betfairlightweight.streaming import StreamListener, HistoricalGeneratorStre
 from betfairlightweight.streaming.stream import MarketStream, RaceStream, CricketStream
 from betfairlightweight.streaming.cache import (
     MarketBookCache,
-    RaceCache,
-    CricketMatchCache,
 )
+import pytz
 from betfairlightweight.resources.baseresource import BaseResource
 from betfairlightweight.compat import json
 
 from .basestream import BaseStream
 from ..exceptions import ListenerError
-from ..utils import create_time
 
 logger = logging.getLogger(__name__)
 
@@ -86,8 +84,9 @@ class FlumineMarketStream(MarketStream):
                     if not _definition_in_play:
                         active = False
                 elif self._listener.seconds_to_start:
-                    _now = datetime.datetime.utcfromtimestamp(publish_time / 1e3)
+                    _now = datetime.datetime.fromtimestamp(publish_time / 1e3, datetime.UTC)
                     _market_time = BaseResource.strip_datetime(_definition_market_time)
+                    _market_time = _market_time.replace(tzinfo=pytz.UTC)
                     seconds_to_start = (_market_time - _now).total_seconds()
                     if seconds_to_start > self._listener.seconds_to_start:
                         active = False

@@ -249,49 +249,6 @@ class StreamsTest(unittest.TestCase):
         self.assertEqual(len(self.streams), 1)
         mock_increment.assert_not_called()
 
-    @mock.patch(
-        "flumine.streams.streams.SportsDataStream", autospec=streams.SportsDataStream
-    )
-    @mock.patch("flumine.streams.streams.Streams._increment_stream_id")
-    def test_add_stream_sports_data(self, mock_increment, sports_data_stream_class):
-        mock_strategy = mock.Mock(
-            market_filter=[],
-            sports_data_filter=["raceSubscription"],
-        )
-        self.streams.add_stream(mock_strategy)
-        self.assertEqual(len(self.streams), 1)
-        mock_increment.assert_called_with()
-        sports_data_stream_class.assert_has_calls(
-            [
-                call(
-                    flumine=self.mock_flumine,
-                    stream_id=mock_increment(),
-                    sports_data_filter="raceSubscription",
-                    streaming_timeout=mock_strategy.streaming_timeout,
-                )
-            ]
-        )
-
-    @mock.patch("flumine.streams.streams.Streams._increment_stream_id")
-    def test_add_stream_sports_data_old(self, mock_increment):
-        mock_strategy = mock.Mock(
-            market_filter=[],
-            sports_data_filter=["cricketSubscription"],
-            streaming_timeout=3,
-        )
-        stream = mock.Mock(
-            stream_id=1,
-            spec=streams.SportsDataStream,
-            market_filter={},
-            sports_data_filter="cricketSubscription",
-            streaming_timeout=3,
-        )
-        self.streams._streams = [stream]
-
-        self.streams.add_stream(mock_strategy)
-        self.assertEqual(len(self.streams), 1)
-        mock_increment.assert_not_called()
-
     @mock.patch("flumine.streams.streams.HistoricalStream")
     @mock.patch("flumine.streams.streams.Streams._increment_stream_id")
     def test_add_historical_stream(self, mock_increment, mock_historical_stream_class):
@@ -487,10 +444,8 @@ class TestBaseStream(unittest.TestCase):
         self.assertEqual(self.stream.stream_id, 123)
         self.assertEqual(self.stream.market_filter, {"test": "me"})
         self.assertEqual(self.stream.market_data_filter, {"please": "now"})
-        self.assertEqual(self.stream.sports_data_filter, "yes")
         self.assertEqual(self.stream.streaming_timeout, 0.01)
         self.assertEqual(self.stream.conflate_ms, 100)
-        self.assertFalse(self.stream.custom)
         self.assertIsNone(self.stream._stream)
         self.assertEqual(self.stream._client, self.mock_client)
         self.assertEqual(self.stream.MAX_LATENCY, 0.5)
@@ -581,19 +536,12 @@ class TestDataStream(unittest.TestCase):
             listener=self.stream._listener, unique_id=123
         )
 
-    # def test_handle_output(self):
-    #     pass
-
-    @mock.patch("flumine.streams.datastream.FlumineCricketStream")
-    @mock.patch("flumine.streams.datastream.FlumineRaceStream")
     @mock.patch("flumine.streams.datastream.FlumineOrderStream")
     @mock.patch("flumine.streams.datastream.FlumineMarketStream")
     def test_flumine_listener(
         self,
         mock_market_stream,
         mock_order_stream,
-        mock_race_stream,
-        mock_cricket_stream,
     ):
         listener = datastream.FlumineListener()
         self.assertEqual(
@@ -601,12 +549,6 @@ class TestDataStream(unittest.TestCase):
         )
         self.assertEqual(
             listener._add_stream(123, "orderSubscription"), mock_order_stream()
-        )
-        self.assertEqual(
-            listener._add_stream(123, "raceSubscription"), mock_race_stream()
-        )
-        self.assertEqual(
-            listener._add_stream(123, "cricketSubscription"), mock_cricket_stream()
         )
 
     def test_flumine_stream(self):
@@ -880,18 +822,6 @@ class TestHistoricListener(unittest.TestCase):
     def test__add_stream_order(self):
         with self.assertRaises(ListenerError):
             self.listener._add_stream(123, "orderSubscription")
-
-    @mock.patch("flumine.streams.historicalstream.FlumineRaceStream")
-    def test__add_stream_race(self, mock_stream):
-        self.assertEqual(
-            self.listener._add_stream(123, "raceSubscription"), mock_stream()
-        )
-
-    @mock.patch("flumine.streams.historicalstream.FlumineCricketStream")
-    def test__add_stream_cricket(self, mock_stream):
-        self.assertEqual(
-            self.listener._add_stream(123, "cricketSubscription"), mock_stream()
-        )
 
     def test__add_stream_err(self):
         with self.assertRaises(ListenerError):

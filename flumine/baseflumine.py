@@ -81,7 +81,6 @@ class BaseFlumine:
         logger.info("Adding strategy %s", strategy)
         self.streams(strategy)  # create required streams
         self.strategies(strategy, self.clients, self)  # store in strategies
-        self.log_control(events.StrategyEvent(strategy))
 
     def add_worker(self, worker: BackgroundWorker) -> None:
         logger.info("Adding worker %s", worker.name)
@@ -231,7 +230,6 @@ class BaseFlumine:
             if market:
                 if market.market_catalogue is None:
                     market.market_catalogue = market_catalogue
-                    self.log_control(events.MarketEvent(market))
                     logger.debug(
                         "Created marketCatalogue for %s",
                         market.market_id,
@@ -261,7 +259,7 @@ class BaseFlumine:
         # update state
         if event.event:
             process_current_orders(
-                self.markets, self.strategies, event, self.log_control, self._add_market
+                self.markets, self.strategies, event, self._add_market
             )
         for market in self.markets:
             if market.closed is False and market.blotter.active:
@@ -339,7 +337,6 @@ class BaseFlumine:
                 self._process_cleared_markets(
                     events.ClearedMarketsEvent(cleared_markets)
                 )
-        self.log_control(event)
         logger.debug("Market closed", extra={"market_id": market_id, **self.info})
 
         # check for markets that have been closed for x seconds and remove
@@ -368,7 +365,6 @@ class BaseFlumine:
             return
 
         meta_orders = market.blotter.process_cleared_orders(event.event)
-        self.log_control(events.ClearedOrdersMetaEvent(meta_orders))
         logger.debug(
             "Market cleared",
             extra={
@@ -389,7 +385,6 @@ class BaseFlumine:
                     "bet_count": cleared_market.bet_count,
                 },
             )
-        self.log_control(event)
 
     def _process_end_flumine(self) -> None:
         self.strategies.finish(self)

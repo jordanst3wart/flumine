@@ -31,7 +31,7 @@ orderStatus: PENDING, EXECUTION_COMPLETE, EXECUTABLE, EXPIRED
 
 
 def process_current_orders(
-    markets: Markets, strategies: Strategies, event, log_control, add_market
+    markets: Markets, strategies: Strategies, event, add_market
 ) -> None:
     for current_orders in event.event:
         client = current_orders.client
@@ -68,7 +68,7 @@ def process_current_orders(
                 if order is None:
                     continue
             # process order status
-            process_current_order(order, current_order, log_control)
+            process_current_order(order, current_order)
             # complete order if required
             if order.complete:
                 market = markets.markets[order.market_id]
@@ -76,14 +76,13 @@ def process_current_orders(
                     market.blotter.complete_order(order)
 
 
-def process_current_order(order: BaseOrder, current_order, log_control) -> None:
+def process_current_order(order: BaseOrder, current_order) -> None:
     # update
     order.update_current_order(current_order)
     # pickup async orders
     if order.async_ and order.bet_id is None and current_order.bet_id:
         order.responses.placed()
         order.bet_id = current_order.bet_id
-        log_control(OrderEvent(order))
     # update status
     if order.bet_id and order.status == OrderStatus.PENDING:
         if order.current_order.status == "EXECUTABLE":

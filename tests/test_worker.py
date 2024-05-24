@@ -192,8 +192,7 @@ class WorkersTest(unittest.TestCase):
         mock_flumine = mock.Mock(clients=[mock_client])
         worker.poll_account_balance(mock_context, mock_flumine)
         mock_client.update_account_details.assert_called_with()
-        mock_events.BalanceEvent.assert_called_with(mock_client)
-        mock_flumine.log_control.assert_called_with(mock_events.BalanceEvent())
+        # mock_events.BalanceEvent.assert_called_with(mock_client)
 
     @mock.patch("flumine.worker._get_cleared_market")
     @mock.patch("flumine.worker._get_cleared_orders")
@@ -262,7 +261,6 @@ class WorkersTest(unittest.TestCase):
             from_record=0,
             customer_strategy_refs=[mock_config.customer_strategy_ref],
         )
-        mock_flumine.log_control.assert_called_with(mock_events.ClearedOrdersEvent())
         mock_flumine.handler_queue.put.assert_called_with(
             mock_events.ClearedOrdersEvent()
         )
@@ -327,7 +325,6 @@ class WorkersTest(unittest.TestCase):
             from_record=0,
             customer_strategy_refs=[mock_config.customer_strategy_ref],
         )
-        mock_flumine.log_control.assert_not_called()
         mock_flumine.handler_queue.put.assert_not_called()
 
     @mock.patch("flumine.worker.config")
