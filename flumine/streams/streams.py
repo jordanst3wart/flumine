@@ -5,7 +5,6 @@ from typing import Optional, Union, Iterator
 from ..strategy.strategy import BaseStrategy
 from .marketstream import MarketStream
 from .datastream import DataStream
-from .historicalstream import HistoricalStream
 from .orderstream import OrderStream
 from .simulatedorderstream import SimulatedOrderStream
 from ..clients import ExchangeType, BaseClient
@@ -22,6 +21,7 @@ class Streams:
         self._stream_id = 0
 
     def __call__(self, strategy: BaseStrategy) -> None:
+        logger.info("this function is not called at all")
         if self.flumine.SIMULATED:  # probably don't need this
             logger.info("actually need simulated stream thing")
             markets = strategy.market_filter.get("markets")
@@ -61,6 +61,7 @@ class Streams:
                             % (market, country_code, strategy)
                         )
                     else:
+                        logger.info("creating historical stream... don't delete them")
                         stream = self.add_historical_stream(
                             strategy,
                             market,
@@ -126,55 +127,6 @@ class Streams:
                 self._streams.append(stream)
                 strategy.streams.append(stream)
 
-    def add_historical_stream(
-        self,
-        strategy: BaseStrategy,
-        market: str,
-        market_definition: Optional[MarketDefinition],
-        event_processing: bool,
-        **listener_kwargs,
-    ) -> HistoricalStream:
-        for stream in self:
-            if (
-                stream.market_filter == market
-                and stream.event_processing == event_processing
-                and stream.listener_kwargs == listener_kwargs
-            ):
-                return stream
-        else:
-            stream_id = self._increment_stream_id()
-            event_id = getattr(market_definition, "event_id", None)
-            if event_processing and event_id is None:
-                logger.warning("EventId not found for market %s" % market)
-            logger.info(
-                "Creating new %s (%s) for strategy %s",
-                HistoricalStream.__name__,
-                stream_id,
-                strategy,
-                extra={
-                    "strategy": strategy,
-                    "stream_id": stream_id,
-                    "market_filter": market,
-                    "event_id": event_id,
-                    "event_processing": event_processing,
-                },
-            )
-            stream = HistoricalStream(
-                flumine=self.flumine,
-                stream_id=stream_id,
-                market_filter=market,
-                market_data_filter=strategy.market_data_filter,
-                streaming_timeout=strategy.streaming_timeout,
-                conflate_ms=strategy.conflate_ms,
-                output_queue=False,
-                event_processing=event_processing,
-                event_id=event_id,
-                **listener_kwargs,
-            )
-            self._streams.append(stream)
-            return stream
-
-    """ order data """
 
     def add_order_stream(
         self,
@@ -236,7 +188,7 @@ class Streams:
         self._stream_id += int(1e3)
         return self._stream_id
 
-    def __iter__(self) -> Iterator[Union[MarketStream, DataStream, HistoricalStream]]:
+    def __iter__(self) -> Iterator[Union[MarketStream, DataStream]]:
         return iter(self._streams)
 
     def __len__(self) -> int:

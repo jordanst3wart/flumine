@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseFlumine:
-    SIMULATED = False  # probably don't need
+    SIMULATED = False
 
     def __init__(self, client: BaseClient = None):
         """
@@ -73,6 +73,7 @@ class BaseFlumine:
         if self.clients.simulated and not any(
             isinstance(val, SimulatedMiddleware) for val in self._market_middleware
         ):
+            logger.info("using simulated middleware")
             self.add_market_middleware(SimulatedMiddleware())
         # register default client controls (processed in order)
         self.add_client_control(client, MaxTransactionCount)
@@ -224,7 +225,6 @@ class BaseFlumine:
                     utils.call_process_raw_data(strategy, clk, publish_time, datum)
 
     def _process_market_catalogues(self, event: events.MarketCatalogueEvent) -> None:
-        logger.info("market catalogue event actually called")
         for market_catalogue in event.event:
             market = self.markets.markets.get(market_catalogue.market_id)
             if market:

@@ -134,3 +134,26 @@ flumine relies on these libraries:
 * `python-json-logger` - JSON logging
 * `requests` - HTTP support
 * `smart-open` - Efficient streaming of very large files from/to storages such as S3, including (de)compression
+
+"threads": ["<_MainThread(MainThread, started 281473012465696)>", 
+"<TradeProcessorThread(Thread-1, started 281472578363680)>",
+"<BackgroundWorker(keep_alive, started daemon 281472276156704)>",
+"<BackgroundWorker(poll_market_catalogue, started daemon 281472265605408)>",
+"<BackgroundWorker(poll_account_balance, started daemon 281472255054112)>",
+"<BackgroundWorker(poll_market_closure, started daemon 281472244502816)>",
+"<MarketStream(MarketStream, started daemon 281472023916832)>",
+"<Thread(MarketStream_output_thread, started daemon 281472013365536)>",
+"<Thread(ThreadPoolExecutor-0_0, started 281472002814240)>",
+"<Thread(sentry-sdk.BackgroundWorker, started daemon 281471992262944)>"], "threads_len": 10}
+
+
+"threads": [
+"<_MainThread(MainThread, started 281473372315680)>",
+"<TradeProcessorThread(Thread-1, started 281472938397984)>",
+"<CalculateReturnsThread(Thread-2, started 281472927846688)>",
+"<BackgroundWorker(keep_alive, started daemon 281472636375328)>",
+"<BackgroundWorker(poll_market_catalogue, started daemon 281472625824032)>",
+"<BackgroundWorker(poll_account_balance, started daemon 281472615272736)>",
+"<BackgroundWorker(poll_market_closure, started daemon 281472604721440)>",
+"<MarketStream(MarketStream, started daemon 281472594170144)>",
+"<Thread(MarketStream_output_thread, started daemon 281472583618848)>"], "threads_len": 9}
