@@ -1,11 +1,6 @@
 import re
-import uuid
 import logging
 import hashlib
-import datetime
-import functools
-import smart_open
-from pathlib import Path
 from typing import Optional, Tuple, Callable, Union
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -41,44 +36,6 @@ MAX_PRICE = 1000
 MARKET_ID_REGEX = re.compile(r"1.\d{9}")
 EVENT_ID_REGEX = re.compile(r"\d{8}")
 STRATEGY_NAME_HASH_LENGTH = 13
-
-
-def detect_file_type(file_path: Union[str, tuple]) -> str:
-    if isinstance(file_path, tuple):
-        file_path = file_path[0]
-    path_name = Path(file_path).name
-    market_match = bool(MARKET_ID_REGEX.match(path_name))
-    event_match = bool(EVENT_ID_REGEX.match(path_name))
-    if market_match and not event_match:
-        return "MARKET"
-    elif not market_match and event_match:
-        return "EVENT"
-    else:
-        return "UNKNOWN"
-
-
-def create_short_uuid() -> str:
-    return str(uuid.uuid4())[:8]
-
-
-def file_line_count(file_path: str) -> int:
-    with smart_open.open(file_path) as f:
-        for i, l in enumerate(f):
-            pass
-    return i + 1
-
-
-def get_file_md(file_dir: Union[str, tuple]) -> Optional[MarketDefinition]:
-    # get value from raw streaming file marketDefinition
-    if isinstance(file_dir, tuple):
-        file_dir = file_dir[0]
-    with smart_open.open(file_dir, "r") as f:
-        first_line = f.readline()
-        update = json.loads(first_line)
-    if "mc" not in update or not isinstance(update["mc"], list) or not update["mc"]:
-        return None
-    md = update["mc"][0].get("marketDefinition", {})
-    return MarketDefinition(**md)
 
 
 def chunks(l: list, n: int) -> list:
@@ -130,19 +87,6 @@ PRICES_FLOAT = [float(price) for price in PRICES]
 FINEST_PRICES = make_prices(MIN_PRICE, ((1000, 100),))
 
 
-def get_nearest_price(price, cutoffs=CUTOFFS):
-    if price <= MIN_PRICE:
-        return MIN_PRICE
-    if price > MAX_PRICE:
-        return MAX_PRICE
-    price = as_dec(price)
-    for cutoff, step in cutoffs:
-        if price < cutoff:
-            break
-    step = as_dec(step)
-    return float((price * step).quantize(2, ROUND_HALF_UP) / step)
-
-
 def get_price(data: list, level: int) -> Optional[float]:
     try:
         return data[level]["price"]
@@ -176,18 +120,6 @@ def get_sp(runner: RunnerBook) -> Optional[float]:
         return
     else:
         return runner.sp.actual_sp
-
-
-@functools.lru_cache(maxsize=2048)
-def price_ticks_away(price: float, n_ticks: int) -> float:
-    try:
-        price_index = PRICES_FLOAT.index(price)
-        new_index = price_index + n_ticks
-        if new_index < 0:
-            return 1.01
-        return PRICES_FLOAT[new_index]
-    except IndexError:
-        return 1000
 
 
 def calculate_matched_exposure(mb: list, ml: list) -> Tuple:

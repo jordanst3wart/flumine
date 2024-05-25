@@ -10,32 +10,6 @@ class UtilsTest(unittest.TestCase):
     def setUp(self) -> None:
         logging.disable(logging.CRITICAL)
 
-    def test_detect_file_type(self):
-        self.assertEqual(utils.detect_file_type("hello/world"), "UNKNOWN")
-        self.assertEqual(utils.detect_file_type("hello/12345678.gz"), "EVENT")
-        self.assertEqual(utils.detect_file_type("hello/12345678"), "EVENT")
-        self.assertEqual(utils.detect_file_type(("hello/12345678.gz", "")), "EVENT")
-        self.assertEqual(utils.detect_file_type("hello/1.234567891.gz"), "MARKET")
-        self.assertEqual(utils.detect_file_type("hello/1.234567891"), "MARKET")
-        self.assertEqual(utils.detect_file_type(("hello/1.234567891.gz", "")), "MARKET")
-
-    def test_create_short_uuid(self):
-        self.assertTrue(utils.create_short_uuid())
-
-    def test_file_line_count(self):
-        self.assertGreater(utils.file_line_count(__file__), 10)
-
-    def test_get_file_event_id(self):
-        self.assertEqual(
-            utils.get_file_md("tests/resources/PRO-1.170258213").event_id, "29761984"
-        )
-
-    def test_get_file_event_id_tuple(self):
-        self.assertEqual(
-            utils.get_file_md(("tests/resources/PRO-1.170258213", "test")).event_id,
-            "29761984",
-        )
-
     def test_chunks(self):
         self.assertEqual([i for i in utils.chunks([1, 2, 3], 1)], [[1], [2], [3]])
 
@@ -60,13 +34,6 @@ class UtilsTest(unittest.TestCase):
     def test_make_line_prices(self):
         prices = utils.make_line_prices(0.5, 9.5, 1.0)
         self.assertEqual(prices, [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5])
-
-    def test_get_nearest_price(self):
-        self.assertEqual(utils.get_nearest_price(1.011), 1.01)
-        self.assertEqual(utils.get_nearest_price(0), 1.01)
-        self.assertEqual(utils.get_nearest_price(1001), 1000)
-        self.assertEqual(utils.get_nearest_price(2.01), 2.02)
-        self.assertEqual(utils.get_nearest_price(2.0099), 2.00)
 
     def test_get_price(self):
         self.assertEqual(
@@ -113,17 +80,6 @@ class UtilsTest(unittest.TestCase):
         self.assertIsNone(utils.get_sp(mock_runner))
         mock_runner.sp.actual_sp = 12.2345
         self.assertEqual(utils.get_sp(mock_runner), 12.2345)
-
-    def test_price_ticks_away(self):
-        self.assertEqual(utils.price_ticks_away(1.01, 1), 1.02)
-        self.assertEqual(utils.price_ticks_away(1.01, 5), 1.06)
-        self.assertEqual(utils.price_ticks_away(500, 1), 510)
-        self.assertEqual(utils.price_ticks_away(500, -1), 490)
-        self.assertEqual(utils.price_ticks_away(1.01, -1), 1.01)
-        self.assertEqual(utils.price_ticks_away(1.10, -10), 1.01)
-        self.assertEqual(utils.price_ticks_away(1000, 5), 1000)
-        with self.assertRaises(ValueError):
-            utils.price_ticks_away(999, -1)
 
     def test_calculate_matched_exposure(self):
         self.assertEqual(utils.calculate_matched_exposure([], []), (0.0, 0.0))
