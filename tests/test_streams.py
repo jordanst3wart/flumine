@@ -1,13 +1,10 @@
 import unittest
-import datetime
 from unittest import mock
-from unittest.mock import call
 
 from flumine.streams import streams, datastream
 from flumine.streams.basestream import BaseStream
 from flumine.streams.simulatedorderstream import CurrentOrders
 from flumine.streams import orderstream
-from flumine.exceptions import ListenerError
 
 
 class StreamsTest(unittest.TestCase):
@@ -390,6 +387,7 @@ class TestDataStream(unittest.TestCase):
         mock_on_process.assert_called_with(
             [mock_listener.stream_unique_id, "AAA", 123, order_updates]
         )
+
 
 class TestOrderStream(unittest.TestCase):
     def setUp(self) -> None:

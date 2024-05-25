@@ -4,7 +4,7 @@ from collections import defaultdict
 from ..order.orderpackage import OrderPackageType, BetfairOrderPackage
 from ..events import events
 from ..exceptions import ControlError, OrderError
-from ..utils import chunks, get_market_notes
+from ..utils import chunks
 
 logger = logging.getLogger(__name__)
 
@@ -61,17 +61,8 @@ class Transaction:
             market_version,
             self._async_place_orders,
         )
-        if self.market.blotter.has_trade(order.trade.id):
-            new_trade = False
-        else:
-            new_trade = True
         if order.id not in self.market.blotter:
             self.market.blotter[order.id] = order
-            # update market_notes
-            market_notes = get_market_notes(self.market, order.selection_id)
-            order.market_notes = market_notes
-            if order.trade.market_notes is None:
-                order.trade.market_notes = market_notes
         else:
             raise OrderError("Order %s has already been placed" % order.id)
         if execute:  # handles replaceOrder

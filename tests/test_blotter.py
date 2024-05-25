@@ -773,11 +773,6 @@ class BlotterTest(unittest.TestCase):
         self.blotter._live_orders = ["test"]
         self.blotter.complete_order("test")
 
-    def test_has_trade(self):
-        self.assertFalse(self.blotter.has_trade("123"))
-        self.blotter._trades["123"].append(1)
-        self.assertTrue(self.blotter.has_trade("123"))
-
     def test__contains(self):
         self.blotter._orders = {"123": "test"}
         self.assertIn("123", self.blotter)

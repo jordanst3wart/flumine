@@ -115,21 +115,6 @@ class BaseStrategy:
         # process marketBook; place/cancel/replace orders
         return
 
-    def check_sports_data(
-        self, market: Market, sports_data: Union[Race, CricketMatch]
-    ) -> bool:
-        # process_sports_data only executed if this returns True
-        return False
-
-    def process_sports_data(
-        self, market: Market, sports_data: Union[Race, CricketMatch]
-    ) -> None:
-        # process sports data
-        return
-
-    def process_raw_data(self, clk: str, publish_time: int, datum: dict) -> None:
-        return
-
     def process_orders(self, market: Market, orders: list) -> None:
         # process list of Order objects for strategy and Market
         return

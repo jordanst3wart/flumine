@@ -173,15 +173,6 @@ class BaseStrategyTest(unittest.TestCase):
     def test_process_market_catalogue(self):
         self.strategy.process_market_catalogue(None, None)
 
-    def test_check_sports_data(self):
-        self.assertFalse(self.strategy.check_sports_data(None, None))
-
-    def test_process_sports_data(self):
-        self.strategy.process_sports_data(None, None)
-
-    def test_process_raw_data(self):
-        self.strategy.process_raw_data(None, None, None)
-
     def test_process_orders(self):
         self.strategy.process_orders(None, None)
 
