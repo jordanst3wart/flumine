@@ -14,6 +14,7 @@ class CurrentOrders:
         self.client = client
 
 
+# this is used in paper trading
 class SimulatedOrderStream(BaseStream):
     def run(self) -> None:
         logger.info(
