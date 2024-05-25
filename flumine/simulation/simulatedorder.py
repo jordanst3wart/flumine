@@ -34,6 +34,7 @@ class SimulatedOrder:
         self._bsp_reconciled = False
 
     def __call__(self, market_book: MarketBook, runner_traded: tuple) -> None:
+        logger.info("calling simulated order __call__")
         # simulates order matching
         if self._bsp_reconciled is False and market_book.bsp_reconciled:
             if self.take_sp:
@@ -64,6 +65,7 @@ class SimulatedOrder:
     def place(
         self, order_package, market_book: MarketBook, instruction: dict, bet_id: int
     ) -> SimulatedPlaceResponse:
+        logger.info("calling simulated order place")
         # simulates placeOrder request->matching->response
         # validate market status
         if market_book.status != "OPEN":
@@ -232,6 +234,7 @@ class SimulatedOrder:
         order_status: str = None,
         error_code: str = None,
     ) -> SimulatedPlaceResponse:
+        logger.info("calling simulated order _create_place_response")
         if self.order.client.simulated_full_match:
             if status == "SUCCESS" and self.size_remaining:
                 self.matched.append(
@@ -254,6 +257,7 @@ class SimulatedOrder:
         )
 
     def cancel(self, market_book: MarketBook) -> SimulatedCancelResponse:
+        logger.info("calling simulated order cancel")
         # simulates cancelOrder request->cancel->response
         if market_book.status != "OPEN":
             return SimulatedCancelResponse(
@@ -282,6 +286,7 @@ class SimulatedOrder:
     def update(
         self, market_book: MarketBook, instruction: dict
     ) -> SimulatedUpdateResponse:
+        logger.info("calling simulated order update")
         # simulates updateOrder request->update->response
         if market_book.status != "OPEN":
             return SimulatedUpdateResponse(
