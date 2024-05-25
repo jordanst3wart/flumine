@@ -152,35 +152,6 @@ class BaseFlumine:
                             strategy.process_market_book, market, market_book
                         )
 
-    def _process_sports_data(self, event: events.SportsDataEvent) -> None:
-        logger.info("sport data event actually called")
-        for sports_data in event.event:
-            if hasattr(sports_data, "event_id"):
-                # get eventId
-                event_id = sports_data.event_id
-                # get markets
-                markets = self.markets.events[event_id]
-            else:
-                market_id = sports_data.market_id
-                market = self.markets.markets.get(market_id)
-                if market is None:
-                    logger.error(
-                        "Market not present for sports data",
-                        extra={"market_id": market_id},
-                    )
-                    continue
-                markets = [market]
-            # loop markets
-            for market in markets:
-                for strategy in self.strategies:
-                    if sports_data.streaming_unique_id in strategy.stream_ids:
-                        if utils.call_strategy_error_handling(
-                            strategy.check_sports_data, market, sports_data
-                        ):
-                            utils.call_strategy_error_handling(
-                                strategy.process_sports_data, market, sports_data
-                            )
-
     def process_order_package(self, order_package) -> None:
         """Execute through client."""
         order_package.client.execution.handler(order_package)
@@ -201,28 +172,6 @@ class BaseFlumine:
             strategy.remove_market(market.market_id)
         if clear:
             self.markets.remove_market(market.market_id)
-
-    def _process_raw_data(self, event: events.RawDataEvent) -> None:
-        logger.info("raw data event actually called")
-        stream_id, clk, publish_time, data = event.event
-        for datum in data:
-            if "id" in datum:
-                market_id = datum["id"]
-                market = self.markets.markets.get(market_id)
-                if market is None:
-                    market = self._add_market(market_id, None)
-                elif market.closed:
-                    self.markets.add_market(market_id, market)
-
-                if "marketDefinition" in datum:
-                    market.update_market_catalogue = True
-                    if datum["marketDefinition"]["status"] == "CLOSED":
-                        datum["_stream_id"] = stream_id
-                        self.handler_queue.put(events.CloseMarketEvent(datum))
-
-            for strategy in self.strategies:
-                if stream_id in strategy.stream_ids:
-                    utils.call_process_raw_data(strategy, clk, publish_time, datum)
 
     def _process_market_catalogues(self, event: events.MarketCatalogueEvent) -> None:
         for market_catalogue in event.event:
@@ -269,27 +218,6 @@ class BaseFlumine:
                         utils.call_process_orders_error_handling(
                             strategy, market, strategy_orders
                         )
-
-    def _process_custom_event(self, event: events.CustomEvent) -> None:
-        logger.info("custom event actually called")
-        try:
-            event.callback(self, event)
-        except FlumineException as e:
-            logger.error(
-                "FlumineException error %s in _process_custom_event %s",
-                e,
-                event.callback,
-                exc_info=True,
-            )
-        except Exception as e:
-            logger.exception(
-                "Unknown error %s in _process_custom_event %s",
-                e,
-                event.callback,
-                exc_info=True,
-            )
-            if config.raise_errors:
-                raise
 
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
         logger.info("close market event actually called")

@@ -8,9 +8,6 @@ logger = logging.getLogger(__name__)
 
 MARKET_BOOK_EVENT = EventType.MARKET_BOOK
 CURRENT_ORDERS_EVENT = EventType.CURRENT_ORDERS
-SPORTS_DATA_EVENT = EventType.SPORTS_DATA
-CUSTOM_EVENT_EVENT = EventType.CUSTOM_EVENT
-RAW_DATA_EVENT = EventType.RAW_DATA
 MARKET_CATALOGUE_EVENT = EventType.MARKET_CATALOGUE
 CLEARED_MARKETS_EVENT = EventType.CLEARED_MARKETS
 CLEARED_ORDERS_EVENT = EventType.CLEARED_ORDERS
@@ -26,9 +23,6 @@ class Flumine(BaseFlumine):
         event_handlers = {
             MARKET_BOOK_EVENT: self._process_market_books,
             CURRENT_ORDERS_EVENT: self._process_current_orders,
-            CUSTOM_EVENT_EVENT: self._process_custom_event,
-            SPORTS_DATA_EVENT: self._process_sports_data,
-            RAW_DATA_EVENT: self._process_raw_data,
             MARKET_CATALOGUE_EVENT: self._process_market_catalogues,
             CLEARED_MARKETS_EVENT: self._process_cleared_markets,
             CLEARED_ORDERS_EVENT: self._process_cleared_orders,
@@ -63,7 +57,7 @@ class Flumine(BaseFlumine):
             worker.BackgroundWorker(
                 self,
                 function=worker.poll_market_catalogue,
-                interval=60,
+                interval=120,
                 start_delay=10,  # wait for streams to populate
             )
         )
