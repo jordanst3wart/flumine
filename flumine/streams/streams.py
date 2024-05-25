@@ -83,8 +83,6 @@ class Streams:
             elif client.EXCHANGE == ExchangeType.BETFAIR:
                 self.add_order_stream(client)
 
-    """ market data """
-
     def add_stream(self, strategy: BaseStrategy) -> None:
         # markets
         if isinstance(strategy.market_filter, dict) or strategy.market_filter is None:
@@ -160,13 +158,6 @@ class Streams:
             client=client,
             custom=True,
         )
-        self._streams.append(stream)
-        return stream
-
-    """ custom stream """
-
-    def add_custom_stream(self, stream):
-        stream.stream_id = self._increment_stream_id()
         self._streams.append(stream)
         return stream
 
