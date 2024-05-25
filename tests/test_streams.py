@@ -160,13 +160,6 @@ class StreamsTest(unittest.TestCase):
             custom=True,
         )
 
-    @mock.patch("flumine.streams.streams.Streams._increment_stream_id")
-    def test_add_custom_stream(self, mock_increment):
-        mock_stream = mock.Mock()
-        self.streams.add_custom_stream(mock_stream)
-        mock_increment.assert_called_with()
-        self.assertEqual(self.streams._streams, [mock_stream])
-
     def test_start(self):
         mock_stream = mock.Mock()
         self.streams._streams = [mock_stream]

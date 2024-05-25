@@ -45,6 +45,7 @@ class SimulatedMiddleware(Middleware):
         self._runner_removals = []
 
     def __call__(self, market) -> None:
+        logger.info("__call__ simulated middleware")
         market_analytics = self.markets[market.market_id]
         runner_removals = []  # [(selectionId, handicap, adjustmentFactor)..]
 
@@ -76,6 +77,7 @@ class SimulatedMiddleware(Middleware):
             self._process_simulated_orders(market, market_analytics)
 
     def remove_market(self, market) -> None:
+        logger.info("remove_market simulated middleware")
         try:
             del self.markets[market.market_id]
         except KeyError:
@@ -88,6 +90,9 @@ class SimulatedMiddleware(Middleware):
         removal_handicap: int,
         removal_adjustment_factor: float,
     ) -> None:
+        logger.info(
+            "_process_runner_removal simulated middleware - can basically delete stimulated middleware if this doesn't show"
+        )
         for order in market.blotter:
             if order.simulated:
                 if order.lookup == (
