@@ -10,7 +10,7 @@ from flumine.markets.middleware import (
     OrderTypes,
     WIN_MINIMUM_ADJUSTMENT_FACTOR,
     PLACE_MINIMUM_ADJUSTMENT_FACTOR,
-    LIVE_STATUS
+    LIVE_STATUS,
 )
 from flumine.order.ordertype import MarketOnCloseOrder
 

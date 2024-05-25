@@ -388,6 +388,7 @@ class TestDataStream(unittest.TestCase):
             [mock_listener.stream_unique_id, "AAA", 123, order_updates]
         )
 
+
 class TestOrderStream(unittest.TestCase):
     def setUp(self) -> None:
         self.mock_flumine = mock.Mock()

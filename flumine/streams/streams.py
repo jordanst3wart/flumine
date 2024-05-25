@@ -127,7 +127,6 @@ class Streams:
                 self._streams.append(stream)
                 strategy.streams.append(stream)
 
-
     def add_order_stream(
         self,
         client: BaseClient,
