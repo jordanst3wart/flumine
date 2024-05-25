@@ -1,3 +1,4 @@
+import logging
 import time
 import requests
 from typing import Optional
@@ -7,12 +8,15 @@ from .. import config
 from ..clients.clients import ExchangeType
 from ..order.orderpackage import BaseOrderPackage, OrderPackageType
 
+logger = logging.getLogger(__name__)
+
 
 class SimulatedExecution(BaseExecution):
     EXCHANGE = ExchangeType.SIMULATED
 
     def handler(self, order_package: BaseOrderPackage) -> None:
         """Only uses _thread_pool if paper_trade"""
+        logger.info("SimulatedExecution handler used")
         if order_package.package_type == OrderPackageType.PLACE:
             func = self.execute_place
         elif order_package.package_type == OrderPackageType.CANCEL:
@@ -32,6 +36,7 @@ class SimulatedExecution(BaseExecution):
     def execute_place(
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
+        logger.info("SimulatedExecution execute_place used")
         if order_package.client.paper_trade:
             time.sleep(order_package.bet_delay + config.place_latency)
         market = self.flumine.markets.markets[order_package.market_id]
@@ -55,6 +60,7 @@ class SimulatedExecution(BaseExecution):
     def execute_cancel(
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
+        logger.info("SimulatedExecution execute_cancel used")
         if order_package.client.paper_trade:
             time.sleep(config.cancel_latency)
         market = self.flumine.markets.markets[order_package.market_id]
@@ -81,6 +87,7 @@ class SimulatedExecution(BaseExecution):
     def execute_update(
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
+        logger.info("SimulatedExecution execute_place used")
         if order_package.client.paper_trade:
             time.sleep(config.update_latency)
         market = self.flumine.markets.markets[order_package.market_id]
@@ -106,6 +113,7 @@ class SimulatedExecution(BaseExecution):
     def execute_replace(
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
+        logger.info("SimulatedExecution execute_replace used")
         if (
             order_package.client.paper_trade
         ):  # todo should the cancel happen without a delay?
