@@ -8,8 +8,6 @@ from .datastream import DataStream
 from .orderstream import OrderStream
 from .simulatedorderstream import SimulatedOrderStream
 from ..clients import ExchangeType, BaseClient
-from ..utils import get_file_md
-from betfairlightweight.resources.streamingresources import MarketDefinition
 
 logger = logging.getLogger(__name__)
 
@@ -37,40 +35,6 @@ class Streams:
                 )
             elif markets is None and events is None:
                 logger.warning("No markets or events found for strategy %s", strategy)
-            elif markets:
-                # order markets by name as an attempt to process in chronological order
-                markets.sort()
-                for market in markets:
-                    market_definition = get_file_md(market)
-                    market_type = getattr(market_definition, "market_type", None)
-                    country_code = getattr(market_definition, "country_code", None)
-                    if market_types and market_type and market_type not in market_types:
-                        logger.warning(
-                            "Skipping market %s (%s) for strategy %s due to marketType filter",
-                            market,
-                            market_type,
-                            strategy,
-                        )
-                    elif (
-                        country_codes
-                        and country_code
-                        and country_code not in country_codes
-                    ):
-                        logger.warning(
-                            "Skipping market %s (%s) for strategy %s due to countryCode filter"
-                            % (market, country_code, strategy)
-                        )
-                    else:
-                        logger.info("creating historical stream... don't delete them")
-                        stream = self.add_historical_stream(
-                            strategy,
-                            market,
-                            market_definition,
-                            event_processing,
-                            **listener_kwargs,
-                        )
-                        strategy.streams.append(stream)
-                        strategy.historic_stream_ids.add(stream.stream_id)
             elif events:
                 raise NotImplementedError()
         else:

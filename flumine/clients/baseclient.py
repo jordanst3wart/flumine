@@ -1,7 +1,6 @@
 from typing import Optional
 from betfairlightweight.metadata import transaction_limit as betfair_transaction_limit
 
-from ..utils import create_short_uuid
 from .clients import ExchangeType
 
 DEFAULT_CAPITAL_BASE = 0
@@ -35,7 +34,7 @@ class BaseClient:
             assert (
                 betting_client.lightweight is False
             ), "flumine requires resources, please set lightweight to False"
-        self._username = username or create_short_uuid()
+        self._username = username
         self.betting_client = betting_client
         self.transaction_limit = transaction_limit
         self.capital_base = capital_base
