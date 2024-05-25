@@ -61,10 +61,6 @@ class Transaction:
             market_version,
             self._async_place_orders,
         )
-        if self.market.blotter.has_trade(order.trade.id):
-            new_trade = False
-        else:
-            new_trade = True
         if order.id not in self.market.blotter:
             self.market.blotter[order.id] = order
             # update market_notes

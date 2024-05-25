@@ -262,9 +262,6 @@ class Blotter:
     def has_order(self, customer_order_ref: str) -> bool:
         return customer_order_ref in self._orders
 
-    def has_trade(self, trade_id: str) -> bool:
-        return trade_id in self._trades
-
     __contains__ = has_order
 
     def __setitem__(self, customer_order_ref: str, order) -> None:

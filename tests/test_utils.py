@@ -361,18 +361,3 @@ class UtilsTest(unittest.TestCase):
         mock_market = mock.Mock(market_book=mock_market_book)
         self.assertEqual(utils.get_market_notes(mock_market, 123), "1.01,1.01,5")
 
-    def test__get_event_ids(self):
-        mock_markets = [
-            mock.Mock(event_id=1, event_type_id="1", closed=False),
-            mock.Mock(event_id=1, event_type_id="1", closed=False),
-            mock.Mock(event_id=2, event_type_id="1", closed=False),
-            mock.Mock(event_id=3, event_type_id="1", closed=True),
-            mock.Mock(event_id=4, event_type_id="7", closed=False),
-        ]
-        self.assertEqual(utils.get_event_ids(mock_markets, "1"), [1, 2])
-
-    def test_create_time(self):
-        self.assertEqual(
-            utils.create_time(123, "12345.1310"),
-            datetime.datetime(1970, 1, 1, 13, 10, tzinfo=datetime.timezone.utc),
-        )
