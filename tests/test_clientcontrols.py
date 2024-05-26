@@ -27,4 +27,3 @@ class TestBaseControl(unittest.TestCase):
         with self.assertRaises(ControlError):
             self.control._on_error(order, "test")
         order.violation.assert_called_with("Order has violated: None Error: test")
-
