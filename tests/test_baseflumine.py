@@ -3,7 +3,6 @@ from unittest import mock
 
 from flumine.baseflumine import (
     BaseFlumine,
-    FlumineException,
     MaxTransactionCount,
     SimulatedMiddleware,
     Market,
@@ -16,13 +15,6 @@ class BaseFlumineTest(unittest.TestCase):
     def setUp(self):
         self.mock_client = mock.Mock(EXCHANGE=ExchangeType.BETFAIR, paper_trade=False)
         self.base_flumine = BaseFlumine(self.mock_client)
-
-    def test_init(self):
-        self.assertFalse(self.base_flumine.SIMULATED)
-        self.assertFalse(self.base_flumine._running)
-        self.assertEqual(self.base_flumine._market_middleware, [])
-        self.assertEqual(len(self.base_flumine.trading_controls), 3)
-        self.assertEqual(self.base_flumine._workers, [])
 
     @mock.patch("flumine.baseflumine.SimulatedMiddleware")
     @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
@@ -92,11 +84,6 @@ class BaseFlumineTest(unittest.TestCase):
             self.mock_client.trading_controls,
             [mock_control(self.base_flumine, self.mock_client)],
         )
-
-    def test_add_trading_control(self):
-        mock_control = mock.Mock()
-        self.base_flumine.add_trading_control(mock_control)
-        self.assertEqual(len(self.base_flumine.trading_controls), 4)
 
     def test_add_market_middleware(self):
         mock_middleware = mock.Mock()

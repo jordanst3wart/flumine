@@ -18,11 +18,9 @@ from .execution.simulatedexecution import SimulatedExecution
 from .order.process import process_current_orders
 from .controls.clientcontrols import BaseControl, MaxTransactionCount
 from .controls.tradingcontrols import (
-    OrderValidation,
     StrategyExposure,
-    MarketValidation,
 )
-from .exceptions import FlumineException, ClientError
+from .exceptions import ClientError
 from . import config, utils
 
 logger = logging.getLogger(__name__)
@@ -55,8 +53,6 @@ class BaseFlumine:
             self.add_client(client)
 
         self.trading_controls = []
-        self.add_trading_control(OrderValidation)
-        self.add_trading_control(MarketValidation)
         self.add_trading_control(StrategyExposure)
 
         self._workers = []
@@ -203,8 +199,8 @@ class BaseFlumine:
                             strategy.process_market_catalogue, market, market_catalogue
                         )
 
+    # TODO investigate why this function is called so much
     def _process_current_orders(self, event: events.CurrentOrdersEvent) -> None:
-        logger.info("current orders event actually called")
         # update state
         if event.event:
             process_current_orders(

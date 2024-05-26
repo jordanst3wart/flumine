@@ -78,7 +78,6 @@ class Market:
             client=client,
         )
 
-    # order
     def place_order(
         self,
         order,

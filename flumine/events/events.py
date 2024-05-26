@@ -3,17 +3,14 @@ from enum import Enum
 
 
 class EventType(Enum):
-    CONFIG = "Config"
     TERMINATOR = "Terminator"
     # betfair objects
     MARKET_CATALOGUE = "MarketCatalogue"
     MARKET_BOOK = "MarketBook"
-    SPORTS_DATA = "SportsData"
     RAW_DATA = "Raw streaming data"
     CURRENT_ORDERS = "CurrentOrders"
     CLEARED_MARKETS = "ClearedMarkets"
     CLEARED_ORDERS = "ClearedOrders"
-    CLEARED_ORDERS_META = "ClearedOrders metadata"
     BALANCE = "Balance"
     # flumine objects
     STRATEGY = "Strategy"
@@ -22,7 +19,6 @@ class EventType(Enum):
     ORDER = "Order"
     ORDER_PACKAGE = "Order package"
     CLOSE_MARKET = "Closed market"
-    CUSTOM_EVENT = "Custom event"
 
 
 class QueueType(Enum):
@@ -63,11 +59,7 @@ class MarketBookEvent(BaseEvent):
     QUEUE_TYPE = QueueType.HANDLER
 
 
-class SportsDataEvent(BaseEvent):
-    EVENT_TYPE = EventType.SPORTS_DATA
-    QUEUE_TYPE = QueueType.HANDLER
-
-
+# can probably delete
 class RawDataEvent(BaseEvent):
     EVENT_TYPE = EventType.RAW_DATA
     QUEUE_TYPE = QueueType.HANDLER
@@ -93,56 +85,11 @@ class CloseMarketEvent(BaseEvent):
     QUEUE_TYPE = QueueType.HANDLER
 
 
-class CustomEvent(BaseEvent):
-    EVENT_TYPE = EventType.CUSTOM_EVENT
-    QUEUE_TYPE = QueueType.HANDLER
-
-    def __init__(self, event, callback, *args, **kwargs):
-        super(CustomEvent, self).__init__(event)
-        self.callback = callback
-
-
-# LOGGING
-
-
-class ConfigEvent(BaseEvent):
-    EVENT_TYPE = EventType.CONFIG
-    QUEUE_TYPE = QueueType.LOGGING
-
-
-class ClearedOrdersMetaEvent(BaseEvent):
-    EVENT_TYPE = EventType.CLEARED_ORDERS_META
-    QUEUE_TYPE = QueueType.LOGGING
-
-
-class BalanceEvent(BaseEvent):
-    EVENT_TYPE = EventType.BALANCE
-    QUEUE_TYPE = QueueType.LOGGING
-
-
-class StrategyEvent(BaseEvent):
-    EVENT_TYPE = EventType.STRATEGY
-    QUEUE_TYPE = QueueType.LOGGING
-
-
 class MarketEvent(BaseEvent):
     EVENT_TYPE = EventType.MARKET
-    QUEUE_TYPE = QueueType.LOGGING
-
-
-class TradeEvent(BaseEvent):
-    EVENT_TYPE = EventType.TRADE
     QUEUE_TYPE = QueueType.LOGGING
 
 
 class OrderEvent(BaseEvent):
     EVENT_TYPE = EventType.ORDER
     QUEUE_TYPE = QueueType.LOGGING
-
-
-# both
-
-
-class TerminationEvent(BaseEvent):
-    EVENT_TYPE = EventType.TERMINATOR
-    QUEUE_TYPE = QueueType.HANDLER
