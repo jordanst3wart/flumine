@@ -27,6 +27,8 @@ class FlumineListener(StreamListener):
 
 
 class FlumineStream(BFBaseStream):
+
+    # TODO might not be used
     def on_process(self, caches: list, publish_time: Optional[int] = None) -> None:
         output = RawDataEvent(caches)
         self.output_queue.put(output)
