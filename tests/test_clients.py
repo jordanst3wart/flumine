@@ -4,7 +4,7 @@ from betfairlightweight.metadata import currency_parameters
 from betfairlightweight.exceptions import BetfairError
 
 from flumine.clients.clients import ExchangeType, Clients
-from flumine.clients import BaseClient, BetfairClient, SimulatedClient
+from flumine.clients import BaseClient, BetfairClient
 from flumine.clients import betfairclient
 from flumine import exceptions
 
@@ -361,40 +361,3 @@ class BetfairClientTest(unittest.TestCase):
         mock_account_details = None
         self.betfair_client.account_details = mock_account_details
         self.assertEqual(self.betfair_client.min_bet_payout, 10)
-
-
-class SimulatedClientTest(unittest.TestCase):
-    def setUp(self):
-        self.simulated_client = SimulatedClient()
-
-    def test_login(self):
-        self.simulated_client.login()
-
-    def test_keep_alive(self):
-        self.simulated_client.keep_alive()
-
-    def test_logout(self):
-        self.simulated_client.logout()
-
-    @mock.patch("flumine.clients.simulatedclient.AccountDetails")
-    def test_update_account_details(self, mock_account_details):
-        self.simulated_client.update_account_details()
-        self.assertEqual(self.simulated_client.account_details, mock_account_details())
-
-    def test_min_bet_size(self):
-        self.simulated_client.update_account_details()
-        self.assertEqual(self.simulated_client.min_bet_size, 1)
-
-    def test_min_bsp_liability(self):
-        self.simulated_client.update_account_details()
-        self.assertEqual(self.simulated_client.min_bsp_liability, 10)
-
-    def test_min_bet_payout(self):
-        self.simulated_client.update_account_details()
-        self.assertEqual(self.simulated_client.min_bet_payout, 10)
-
-    def test_username(self):
-        self.assertEqual(
-            self.simulated_client.username,
-            self.simulated_client._username,
-        )
