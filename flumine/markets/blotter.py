@@ -160,38 +160,6 @@ class Blotter:
 
     """ position """
 
-    def market_exposure(self, strategy, market_book) -> float:
-        """Returns worst-case exposure for market, which is the maximum potential loss (negative),
-        arising from the worst race outcome, or the minimum potential profit (positive).
-        """
-        orders = self.strategy_orders(strategy)
-        runners = set([order.lookup for order in orders])
-        worst_possible_profits = [
-            self.get_exposures(strategy, lookup) for lookup in runners
-        ]
-        worst_possible_profits_on_loses = [
-            wpp["worst_possible_profit_on_lose"] for wpp in worst_possible_profits
-        ]
-        differences = [
-            wpp["worst_possible_profit_on_win"] - wpp["worst_possible_profit_on_lose"]
-            for wpp in worst_possible_profits
-        ] + (market_book.number_of_active_runners - len(runners)) * [0]
-        worst_differences = sorted(differences)[: market_book.number_of_winners]
-        return sum(worst_possible_profits_on_loses) + sum(worst_differences)
-
-    def selection_exposure(self, strategy, lookup: tuple) -> float:
-        """Returns strategy/selection exposure, which is the worse-case loss arising
-        from the selection either winning or losing. Can be positive or zero.
-            positive = potential loss
-            zero = no potential loss
-        """
-        exposures = self.get_exposures(strategy=strategy, lookup=lookup)
-        exposure = -min(
-            exposures["worst_possible_profit_on_win"],
-            exposures["worst_possible_profit_on_lose"],
-        )
-        return max(exposure, 0.0)
-
     def get_exposures(self, strategy, lookup: tuple, exclusion=None) -> dict:
         """Returns strategy/selection exposures as a dict."""
         mb, ml = [], []  # matched bets, (price, size)

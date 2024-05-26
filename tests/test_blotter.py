@@ -273,42 +273,6 @@ class BlotterTest(unittest.TestCase):
         mock_cleared_orders.orders = []
         self.assertEqual(self.blotter.process_cleared_orders(mock_cleared_orders), [])
 
-    def test_selection_exposure(self):
-        """
-        Check that selection_exposure returns the absolute worse loss
-        """
-
-        def get_exposures(strategy, lookup):
-            if strategy == "strategy" and lookup == (1, 2, 3):
-                return {
-                    "worst_possible_profit_on_win": -1.0,
-                    "worst_possible_profit_on_lose": -2.0,
-                }
-
-        self.blotter.get_exposures = mock.Mock(side_effect=get_exposures)
-
-        result = self.blotter.selection_exposure("strategy", (1, 2, 3))
-
-        self.assertEqual(2.0, result)
-
-    def test_selection_exposure2(self):
-        """
-        Check that selection_exposure returns zero if there is no risk of loss.
-        """
-
-        def get_exposures(strategy, lookup):
-            if strategy == "strategy" and lookup == (1, 2, 3):
-                return {
-                    "worst_possible_profit_on_win": 0.0,
-                    "worst_possible_profit_on_lose": 1.0,
-                }
-
-        self.blotter.get_exposures = mock.Mock(side_effect=get_exposures)
-
-        result = self.blotter.selection_exposure("strategy", (1, 2, 3))
-
-        self.assertEqual(0.0, result)
-
     def test_get_exposures(self):
         mock_strategy = mock.Mock()
         mock_trade = mock.Mock(strategy=mock_strategy)
@@ -689,84 +653,6 @@ class BlotterTest(unittest.TestCase):
                 "worst_potential_unmatched_profit_if_lose": 0.0,
                 "worst_potential_unmatched_profit_if_win": 0.0,
             },
-        )
-
-    def test_market_position(self):
-        mock_strategy = mock.Mock()
-        mock_trade = mock.Mock(strategy=mock_strategy)
-        order_data = [
-            # (order_id, selection_id, side, average_price_matched, size_matched, size_remaining, order_type, complete)
-            (1001, 123, "BACK", 5.6, 2.0, 0.0, LimitOrder(price=5.6, size=2.0), True),
-            (1002, 123, "LAY", 5.2, 3.0, 0.0, LimitOrder(price=5.2, size=3.0), True),
-            (1003, 234, "LAY", 4.8, 4.0, 1.0, LimitOrder(price=4.8, size=5.0), True),
-            (1004, 456, "BACK", None, 0.0, 0.0, LimitOrder(price=5.6, size=2.0), False),
-            (1005, 678, "BACK", None, 0, 0, MarketOnCloseOrder(liability=6), False),
-            (
-                1006,
-                678,
-                "LAY",
-                None,
-                0,
-                0,
-                LimitOnCloseOrder(price=1.01, liability=10),
-                False,
-            ),
-        ]
-        for order in order_data:
-            self.blotter[order[0]] = mock.Mock(
-                trade=mock_trade,
-                lookup=(self.blotter.market_id, order[1], 0),
-                selection_id=order[1],
-                handicap=0,
-                side=order[2],
-                average_price_matched=order[3],
-                size_matched=order[4],
-                size_remaining=order[5],
-                order_type=order[6],
-                complete=order[7],
-            )
-
-        mock_market_book = mock.Mock(number_of_active_runners=6, number_of_winners=1)
-        self.assertEqual(  # single winner
-            self.blotter.market_exposure(mock_strategy, mock_market_book), -20.2
-        )
-        mock_market_book = mock.Mock(number_of_active_runners=6, number_of_winners=2)
-        self.assertEqual(  # muliple winners
-            self.blotter.market_exposure(mock_strategy, mock_market_book), -24.6
-        )
-        mock_market_book = mock.Mock(number_of_active_runners=20, number_of_winners=7)
-        self.assertEqual(  # num winners > num runners traded
-            self.blotter.market_exposure(mock_strategy, mock_market_book), -28.6
-        )
-
-    def test_greened_market_position(self):
-        mock_strategy = mock.Mock()
-        mock_market_book = mock.Mock(number_of_active_runners=6, number_of_winners=1)
-        mock_trade = mock.Mock(strategy=mock_strategy)
-        orders = [
-            # (order_id, selection_id, side, average_price_matched, size_matched, size_remaining, order_type, complete)
-            (1001, 123, "BACK", 5.6, 2.0, 0.0, LimitOrder(price=5.6, size=2.0), True),
-            (1002, 123, "LAY", 5.2, 2.1, 0.0, LimitOrder(price=5.2, size=2.1), True),
-            (1003, 234, "BACK", 4.8, 4.0, 0.0, LimitOrder(price=4.8, size=4.0), True),
-            (1004, 234, "LAY", 4, 4.2, 0.0, LimitOrder(price=4, size=4.2), True),
-            (1005, 345, "BACK", 10, 2.0, 0.0, LimitOrder(price=10, size=2.0), True),
-            (1006, 345, "LAY", 8, 2.2, 0.0, LimitOrder(price=8, size=2.2), True),
-        ]
-        for order in orders:
-            self.blotter[order[0]] = mock.Mock(
-                trade=mock_trade,
-                lookup=(self.blotter.market_id, order[1], 0),
-                selection_id=order[1],
-                handicap=0,
-                side=order[2],
-                average_price_matched=order[3],
-                size_matched=order[4],
-                size_remaining=order[5],
-                order_type=order[6],
-                complete=order[7],
-            )
-        self.assertEqual(  # single winner
-            self.blotter.market_exposure(mock_strategy, mock_market_book), 0.5
         )
 
     def test_complete_order(self):

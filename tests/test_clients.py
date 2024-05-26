@@ -118,13 +118,12 @@ class BaseClientTest(unittest.TestCase):
     def setUp(self):
         self.mock_betting_client = mock.Mock(lightweight=False)
         self.base_client = BaseClient(
-            self.mock_betting_client, 1024, 100, 0.02, True, username="test"
+            self.mock_betting_client, 1024, 0.02, True, username="test"
         )
 
     def test_init(self):
         self.assertEqual(self.base_client.betting_client, self.mock_betting_client)
         self.assertEqual(self.base_client.transaction_limit, 1024)
-        self.assertEqual(self.base_client.capital_base, 100)
         self.assertEqual(self.base_client.commission_base, 0.02)
         self.assertTrue(self.base_client.interactive_login)
         self.assertEqual(self.base_client._username, "test")

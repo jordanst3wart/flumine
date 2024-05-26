@@ -68,8 +68,7 @@ class BaseOrderTest(unittest.TestCase):
         mock_order.update_current_order.assert_called_with(mock_current_order)
         mock_order.execution_complete.assert_called()
 
-    @mock.patch("flumine.order.process.OrderEvent")
-    def test_process_current_order_async(self, mock_order_event):
+    def test_process_current_order_async(self):
         mock_order = mock.Mock(status=OrderStatus.EXECUTABLE, async_=True, bet_id=None)
         mock_order.current_order.status = "EXECUTION_COMPLETE"
         mock_current_order = mock.Mock(bet_id=1234)

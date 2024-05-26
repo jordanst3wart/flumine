@@ -5,7 +5,6 @@ from ..markets.markets import Markets
 from ..order.order import BaseOrder, OrderStatus
 from ..order.trade import Trade
 from ..strategy.strategy import Strategies
-from ..events.events import OrderEvent
 from ..utils import STRATEGY_NAME_HASH_LENGTH
 
 logger = logging.getLogger(__name__)
@@ -94,6 +93,7 @@ def process_current_order(order: BaseOrder, current_order) -> None:
             order.execution_complete()
 
 
+# TODO WTF is this???
 def create_order_from_current(
     markets: Markets, strategies: Strategies, current_order, add_market, client
 ) -> Optional[BaseOrder]:

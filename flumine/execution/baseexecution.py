@@ -135,9 +135,11 @@ class BaseExecution:
                 "bet_id": order.bet_id,
                 "order_id": order.id,
                 "status": instruction_report.status,
-                "error_code": instruction_report.error_code,
             },
         )
+        if instruction_report.error_code:
+            logger.warning("Order error: %s", instruction_report.error_code)
+
         if package_type == OrderPackageType.PLACE:
             dt = False if order.async_ and not order.simulated else True
             order.responses.placed(instruction_report, dt=dt)

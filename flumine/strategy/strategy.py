@@ -1,7 +1,7 @@
 import logging
 from typing import Type, Iterator, Union, List
 from betfairlightweight import filters
-from betfairlightweight.resources import MarketBook, MarketCatalogue, Race, CricketMatch
+from betfairlightweight.resources import MarketBook, MarketCatalogue
 
 from .runnercontext import RunnerContext
 from ..markets.market import Market
