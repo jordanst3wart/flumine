@@ -1,4 +1,3 @@
-import os
 import logging
 from collections import defaultdict
 from betfairlightweight.resources.bettingresources import RunnerBook
