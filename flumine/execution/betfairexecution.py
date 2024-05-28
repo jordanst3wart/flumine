@@ -40,9 +40,6 @@ class BetfairExecution(BaseExecution):
                         # https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/Betting+Enums#BettingEnums-ExecutionReportStatus
                         pass
 
-            # update transaction counts
-            order_package.client.add_transaction(len(order_package))
-
     def place(self, order_package: BaseOrderPackage, session: requests.Session):
         return order_package.client.betting_client.betting.place_orders(
             market_id=order_package.market_id,
@@ -59,7 +56,6 @@ class BetfairExecution(BaseExecution):
     ) -> None:
         response = self._execution_helper(self.cancel, order_package, http_session)
         if response:
-            failed_transaction_count = 0
             order_lookup = {o.bet_id: o for o in order_package}
             for instruction_report in response.cancel_instruction_reports:
                 # get order (can't rely on the order they are returned)
@@ -82,7 +78,6 @@ class BetfairExecution(BaseExecution):
                             order.execution_complete()
                         else:
                             order.executable()
-                        failed_transaction_count += 1
                     elif instruction_report.status == "TIMEOUT":
                         order.executable()
 
@@ -90,12 +85,6 @@ class BetfairExecution(BaseExecution):
             for order in order_lookup.values():
                 with order.trade:
                     order.executable()
-
-            # update transaction counts
-            if failed_transaction_count:
-                order_package.client.add_transaction(
-                    failed_transaction_count, failed=True
-                )
 
     def cancel(self, order_package: BaseOrderPackage, session: requests.Session):
         # temp copy to prevent an empty list of instructions sent
@@ -117,7 +106,6 @@ class BetfairExecution(BaseExecution):
     ) -> None:
         response = self._execution_helper(self.update, order_package, http_session)
         if response:
-            failed_transaction_count = 0
             for order, instruction_report in zip(
                 order_package, response.update_instruction_reports
             ):
@@ -129,15 +117,8 @@ class BetfairExecution(BaseExecution):
                         order.executable()
                     elif instruction_report.status == "FAILURE":
                         order.executable()
-                        failed_transaction_count += 1
                     elif instruction_report.status == "TIMEOUT":
                         order.executable()
-
-            # update transaction counts
-            if failed_transaction_count:
-                order_package.client.add_transaction(
-                    failed_transaction_count, failed=True
-                )
 
     def update(self, order_package: BaseOrderPackage, session: requests.Session):
         return order_package.client.betting_client.betting.update_orders(
@@ -152,7 +133,6 @@ class BetfairExecution(BaseExecution):
     ) -> None:
         response = self._execution_helper(self.replace, order_package, http_session)
         if response:
-            failed_transaction_count = 0
             market = self.flumine.markets.markets[order_package.market_id]
             for order, instruction_report in zip(
                 order_package, response.replace_instruction_reports
@@ -174,7 +154,6 @@ class BetfairExecution(BaseExecution):
                         == "FAILURE"
                     ):
                         order.executable()
-                        failed_transaction_count += 1
                     elif (
                         instruction_report.cancel_instruction_reports.status
                         == "TIMEOUT"
@@ -208,13 +187,6 @@ class BetfairExecution(BaseExecution):
                         instruction_report.place_instruction_reports.status == "TIMEOUT"
                     ):
                         pass  # todo
-
-            # update transaction counts
-            order_package.client.add_transaction(len(order_package))
-            if failed_transaction_count:
-                order_package.client.add_transaction(
-                    failed_transaction_count, failed=True
-                )
 
     def replace(self, order_package: BaseOrderPackage, session: requests.Session):
         return order_package.client.betting_client.betting.replace_orders(

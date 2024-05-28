@@ -78,6 +78,7 @@ class BaseClient:
             elif self.EXCHANGE == ExchangeType.BETFAIR:
                 self.execution = flumine.betfair_execution
 
+    # TODO remove
     def add_transaction(self, count: int, failed: bool = False) -> None:
         for control in self.trading_controls:
             if hasattr(control, "add_transaction"):

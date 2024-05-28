@@ -54,9 +54,6 @@ class SimulatedExecution(BaseExecution):
                 elif simulated_response.status == "FAILURE":
                     order.execution_complete()
 
-        # update transaction counts
-        order_package.client.add_transaction(len(order_package))
-
     def execute_cancel(
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
@@ -64,7 +61,7 @@ class SimulatedExecution(BaseExecution):
         if order_package.client.paper_trade:
             time.sleep(config.cancel_latency)
         market = self.flumine.markets.markets[order_package.market_id]
-        failed_transaction_count = 0
+
         for order in order_package:
             with order.trade:
                 simulated_response = order.simulated.cancel(market.market_book)
@@ -78,11 +75,6 @@ class SimulatedExecution(BaseExecution):
                         order.executable()
                 elif simulated_response.status == "FAILURE":
                     order.executable()
-                    failed_transaction_count += 1
-
-        # update transaction counts
-        if failed_transaction_count:
-            order_package.client.add_transaction(failed_transaction_count, failed=True)
 
     def execute_update(
         self, order_package, http_session: Optional[requests.Session]
@@ -91,7 +83,7 @@ class SimulatedExecution(BaseExecution):
         if order_package.client.paper_trade:
             time.sleep(config.update_latency)
         market = self.flumine.markets.markets[order_package.market_id]
-        failed_transaction_count = 0
+
         for order, instruction in zip(order_package, order_package.update_instructions):
             with order.trade:
                 simulated_response = order.simulated.update(
@@ -104,11 +96,6 @@ class SimulatedExecution(BaseExecution):
                     order.executable()
                 elif simulated_response.status == "FAILURE":
                     order.executable()
-                    failed_transaction_count += 1
-
-        # update transaction counts
-        if failed_transaction_count:
-            order_package.client.add_transaction(failed_transaction_count, failed=True)
 
     def execute_replace(
         self, order_package, http_session: Optional[requests.Session]
@@ -119,7 +106,7 @@ class SimulatedExecution(BaseExecution):
         ):  # todo should the cancel happen without a delay?
             time.sleep(order_package.bet_delay + config.replace_latency)
         market = self.flumine.markets.markets[order_package.market_id]
-        failed_transaction_count = 0
+
         for order, instruction in zip(
             order_package, order_package.replace_instructions
         ):
@@ -131,7 +118,6 @@ class SimulatedExecution(BaseExecution):
                     order.execution_complete()
                 elif cancel_instruction_report.status == "FAILURE":
                     order.executable()
-                    failed_transaction_count += 1
                     err = True
                 self._order_logger(
                     order,
@@ -165,8 +151,3 @@ class SimulatedExecution(BaseExecution):
                     replacement_order.executable()
                 elif place_instruction_report.status == "FAILURE":
                     order.executable()
-
-        # update transaction counts
-        order_package.client.add_transaction(len(order_package))
-        if failed_transaction_count:
-            order_package.client.add_transaction(failed_transaction_count, failed=True)

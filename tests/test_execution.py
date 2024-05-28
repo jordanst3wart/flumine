@@ -263,7 +263,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.place")
@@ -293,7 +292,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.executable.assert_not_called()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.place")
@@ -324,7 +322,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.execution_complete.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.place")
@@ -355,7 +352,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.execution_complete.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.place")
@@ -385,7 +381,6 @@ class BetfairExecutionTest(unittest.TestCase):
         )
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.place")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._execution_helper")
@@ -536,7 +531,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1, failed=True)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.cancel")
@@ -567,7 +561,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.execution_complete.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1, failed=True)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.cancel")
@@ -713,7 +706,6 @@ class BetfairExecutionTest(unittest.TestCase):
         mock_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1, failed=True)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._order_logger")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.update")
@@ -808,7 +800,6 @@ class BetfairExecutionTest(unittest.TestCase):
         )
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution.replace")
     @mock.patch("flumine.execution.betfairexecution.BetfairExecution._execution_helper")
@@ -1067,7 +1058,6 @@ class SimulatedExecutionTest(unittest.TestCase):
         mock_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.simulatedexecution.SimulatedExecution._order_logger")
     def test_execute_place_failure(self, mock__order_logger):
@@ -1096,7 +1086,6 @@ class SimulatedExecutionTest(unittest.TestCase):
         mock_order.execution_complete.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.simulatedexecution.time")
     def test_execute_place_paper_trade(self, mock_time):
@@ -1108,7 +1097,6 @@ class SimulatedExecutionTest(unittest.TestCase):
         mock_order_package.client.paper_trade = True
         self.execution.execute_place(mock_order_package, None)
         mock_time.sleep.assert_called_with(config.place_latency + 1)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.simulatedexecution.SimulatedExecution._order_logger")
     def test_execute_cancel(self, mock__order_logger):
@@ -1175,7 +1163,6 @@ class SimulatedExecutionTest(unittest.TestCase):
         mock_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1, failed=True)
 
     @mock.patch("flumine.execution.simulatedexecution.time")
     def test_execute_cancel_paper_trade(self, mock_time):
@@ -1234,7 +1221,6 @@ class SimulatedExecutionTest(unittest.TestCase):
         mock_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1, failed=True)
 
     @mock.patch("flumine.execution.simulatedexecution.time")
     def test_execute_update_paper_trade(self, mock_time):
@@ -1290,7 +1276,6 @@ class SimulatedExecutionTest(unittest.TestCase):
         # mock_replacement_order.executable.assert_called_with()
         mock_order.trade.__enter__.assert_called_with()
         mock_order.trade.__exit__.assert_called_with(None, None, None)
-        mock_order_package.client.add_transaction.assert_called_with(1)
 
     @mock.patch("flumine.execution.simulatedexecution.SimulatedExecution._order_logger")
     def test_execute_replace_failure(self, mock__order_logger):
