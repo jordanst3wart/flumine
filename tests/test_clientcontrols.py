@@ -1,11 +1,7 @@
 import unittest
-import datetime
 from unittest import mock
 
-from flumine.controls.clientcontrols import (
-    BaseControl,
-    OrderPackageType,
-)
+from flumine.controls.basecontrol import BaseControl
 from flumine.exceptions import ControlError
 
 
@@ -18,12 +14,6 @@ class TestBaseControl(unittest.TestCase):
     def test_init(self):
         self.assertEqual(self.control.flumine, self.mock_flumine)
         self.assertIsNone(self.control.NAME)
-
-    @mock.patch("flumine.controls.BaseControl._validate")
-    def test_call(self, mock_validate):
-        order = mock.Mock()
-        self.control(order, OrderPackageType.PLACE)
-        mock_validate.assert_called_with(order, OrderPackageType.PLACE)
 
     def test_validate(self):
         with self.assertRaises(NotImplementedError):

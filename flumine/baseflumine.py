@@ -5,6 +5,7 @@ import threading
 from typing import Type
 from betfairlightweight import resources
 
+from .controls.basecontrol import BaseControl
 from .strategy.strategy import Strategies, BaseStrategy
 from .streams.streams import Streams
 from .events import events
@@ -16,7 +17,6 @@ from .markets.middleware import Middleware, SimulatedMiddleware
 from .execution.betfairexecution import BetfairExecution
 from .execution.simulatedexecution import SimulatedExecution
 from .order.process import process_current_orders
-from .controls.clientcontrols import BaseControl
 from .controls.tradingcontrols import (
     StrategyExposure,
 )
