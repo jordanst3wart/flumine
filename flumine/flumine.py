@@ -61,23 +61,22 @@ class Flumine(BaseFlumine):
                 start_delay=10,  # wait for streams to populate
             )
         )
-        if not all([client.market_recording_mode for client in self.clients]):
-            self.add_worker(
-                worker.BackgroundWorker(
-                    self,
-                    function=worker.poll_account_balance,
-                    interval=120,
-                    start_delay=10,  # wait for login
-                )
+        self.add_worker(
+            worker.BackgroundWorker(
+                self,
+                function=worker.poll_account_balance,
+                interval=120,
+                start_delay=10,  # wait for login
             )
-            self.add_worker(
-                worker.BackgroundWorker(
-                    self,
-                    function=worker.poll_market_closure,
-                    interval=60,
-                    start_delay=10,  # wait for login
-                )
+        )
+        self.add_worker(
+            worker.BackgroundWorker(
+                self,
+                function=worker.poll_market_closure,
+                interval=60,
+                start_delay=10,  # wait for login
             )
+        )
 
     def __repr__(self) -> str:
         return "<Flumine>"

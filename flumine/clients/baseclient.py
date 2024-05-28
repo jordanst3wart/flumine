@@ -23,10 +23,7 @@ class BaseClient:
         interactive_login: bool = False,
         username: str = None,
         order_stream: bool = True,
-        best_price_execution: bool = True,
-        min_bet_validation: bool = True,
         paper_trade: bool = False,
-        market_recording_mode: bool = False,
         simulated_full_match: bool = False,
         execution_cls=None,
     ):
@@ -41,10 +38,7 @@ class BaseClient:
         self.commission_base = commission_base  # not implemented
         self.interactive_login = interactive_login
         self.order_stream = order_stream
-        self.best_price_execution = best_price_execution  # simulation only
-        self.min_bet_validation = min_bet_validation  # used in OrderValidation control
         self.paper_trade = paper_trade  # simulated order placement using live data
-        self.market_recording_mode = market_recording_mode  # no order stream / workers
         self.simulated_full_match = (
             simulated_full_match  # simulated 100% match on successful place
         )
@@ -78,31 +72,12 @@ class BaseClient:
             elif self.EXCHANGE == ExchangeType.BETFAIR:
                 self.execution = flumine.betfair_execution
 
-    def add_transaction(self, count: int, failed: bool = False) -> None:
-        for control in self.trading_controls:
-            if hasattr(control, "add_transaction"):
-                control.add_transaction(count, failed)
-
     @property
     def username(self) -> str:
         if self.betting_client:
             return self.betting_client.username
         else:
             return self._username
-
-    @property
-    def current_transaction_count_total(self) -> Optional[int]:
-        # current hours total transaction count
-        for control in self.trading_controls:
-            if control.NAME == "MAX_TRANSACTION_COUNT":
-                return control.current_transaction_count_total
-
-    @property
-    def transaction_count_total(self) -> Optional[int]:
-        # total transaction count
-        for control in self.trading_controls:
-            if control.NAME == "MAX_TRANSACTION_COUNT":
-                return control.transaction_count_total
 
     @property
     def min_bet_size(self) -> Optional[float]:
@@ -122,10 +97,7 @@ class BaseClient:
             "username": self.username,
             "exchange": self.EXCHANGE.value if self.EXCHANGE else None,
             "betting_client": self.betting_client,
-            "current_transaction_count_total": self.current_transaction_count_total,
-            "transaction_count_total": self.transaction_count_total,
             "trading_controls": self.trading_controls,
             "order_stream": self.order_stream,
-            "best_price_execution": self.best_price_execution,
             "paper_trade": self.paper_trade,
         }

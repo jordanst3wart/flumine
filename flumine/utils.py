@@ -2,16 +2,12 @@ import re
 import logging
 import hashlib
 from typing import Optional, Tuple, Callable, Union
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
-from betfairlightweight.compat import json
 from betfairlightweight.resources import (
     MarketBook,
     MarketCatalogue,
-    MarketDefinition,
     RunnerBook,
-    Race,
-    CricketMatch,
 )
 
 from . import config
@@ -176,7 +172,7 @@ def wap(matched: list) -> Tuple[float, float]:
 def call_strategy_error_handling(
     func: Callable,
     market,
-    update: Union[MarketBook, MarketCatalogue, Race, CricketMatch],
+    update: Union[MarketBook, MarketCatalogue],
 ) -> Optional[bool]:
     try:
         return func(market, update)

@@ -38,12 +38,6 @@ class Clients:
         logger.info("Client added", extra=client.info)
         return client
 
-    def get_client(self, exchange_type: ExchangeType, username: str):
-        try:
-            return self._exchange_clients[exchange_type][username]
-        except KeyError:
-            return
-
     def get_default(self):
         return self._clients[0]
 
@@ -74,7 +68,6 @@ class Clients:
 
     @property
     def simulated(self) -> bool:
-        # return True if simulated client present
         for client in self._clients:
             if client.EXCHANGE == ExchangeType.SIMULATED or client.paper_trade:
                 return True

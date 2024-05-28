@@ -201,13 +201,11 @@ class WorkersTest(unittest.TestCase):
         mock_client = mock.Mock(
             id="123",
             paper_trade=False,
-            market_recording_mode=False,
             EXCHANGE=ExchangeType.BETFAIR,
         )
         mock_client_sim = mock.Mock(
             id="456",
             paper_trade=False,
-            market_recording_mode=False,
             EXCHANGE=ExchangeType.SIMULATED,
         )
         mock_flumine = mock.Mock(clients=[mock_client, mock_client_sim])

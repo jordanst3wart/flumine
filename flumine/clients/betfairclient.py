@@ -74,7 +74,6 @@ class BetfairClient(BaseClient):
         account_details = self._get_account_details()
         if account_details:
             self.account_details = account_details
-        # get funds
         account_funds = self._get_account_funds()
         if account_funds:
             self.account_funds = account_funds

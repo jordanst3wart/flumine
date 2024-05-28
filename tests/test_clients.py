@@ -57,12 +57,6 @@ class ClientsTest(unittest.TestCase):
         self.clients._clients.append(mock_client_two)
         self.assertEqual(self.clients.get_betfair_default(), mock_client_two)
 
-    def test_get_client(self):
-        self.clients._exchange_clients[ExchangeType.SIMULATED]["joejames"] = 12
-        self.assertEqual(
-            self.clients.get_client(ExchangeType.SIMULATED, "joejames"), 12
-        )
-
     def test_login(self):
         mock_client = unittest.mock.Mock()
         self.clients._clients = [mock_client]
@@ -134,8 +128,6 @@ class BaseClientTest(unittest.TestCase):
         self.assertIsNone(self.base_client.execution)
         self.assertEqual(self.base_client.trading_controls, [])
         self.assertTrue(self.base_client.order_stream)
-        self.assertTrue(self.base_client.best_price_execution)
-        self.assertTrue(self.base_client.min_bet_validation)
         self.assertFalse(self.base_client.paper_trade)
         self.assertFalse(self.base_client.simulated_full_match)
         self.assertIsNone(self.base_client.execution)
@@ -184,28 +176,6 @@ class BaseClientTest(unittest.TestCase):
         mock_flumine = mock.Mock()
         self.base_client.add_execution(mock_flumine)
         self.assertEqual(self.base_client.execution, mock_flumine.simulated_execution)
-
-    def test_add_transaction(self):
-        mock_trading_control = mock.Mock()
-        self.base_client.trading_controls.append(mock_trading_control)
-        self.base_client.add_transaction(123, True)
-        mock_trading_control.add_transaction.assert_called_with(123, True)
-
-    def test_current_transaction_count_total(self):
-        self.assertIsNone(self.base_client.current_transaction_count_total)
-        mock_trading_control = mock.Mock(
-            NAME="MAX_TRANSACTION_COUNT", current_transaction_count_total=123
-        )
-        self.base_client.trading_controls.append(mock_trading_control)
-        self.assertEqual(self.base_client.current_transaction_count_total, 123)
-
-    def test_transaction_count_total(self):
-        self.assertIsNone(self.base_client.transaction_count_total)
-        mock_trading_control = mock.Mock(
-            NAME="MAX_TRANSACTION_COUNT", transaction_count_total=123
-        )
-        self.base_client.trading_controls.append(mock_trading_control)
-        self.assertEqual(self.base_client.transaction_count_total, 123)
 
     def test_min_bet_size(self):
         with self.assertRaises(NotImplementedError):
