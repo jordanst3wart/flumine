@@ -3,7 +3,6 @@ from unittest import mock
 
 from flumine.baseflumine import (
     BaseFlumine,
-    MaxTransactionCount,
     SimulatedMiddleware,
     Market,
 )
@@ -39,8 +38,7 @@ class BaseFlumineTest(unittest.TestCase):
             self.base_flumine.run()
 
     @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
-    @mock.patch("flumine.baseflumine.BaseFlumine.add_client_control")
-    def test_add_client(self, mock_add_client_control, mock_add_market_middleware):
+    def test_add_client(self, mock_add_market_middleware):
         mock_clients = mock.Mock()
         self.base_flumine.clients = mock_clients
         mock_streams = mock.Mock()
@@ -53,10 +51,7 @@ class BaseFlumineTest(unittest.TestCase):
         mock_add_market_middleware.assert_called()
 
     @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
-    @mock.patch("flumine.baseflumine.BaseFlumine.add_client_control")
-    def test_add_client_with_middleware(
-        self, mock_add_client_control, mock_add_market_middleware
-    ):
+    def test_add_client_with_middleware(self, mock_add_market_middleware):
         self.base_flumine._market_middleware.append(SimulatedMiddleware())
         mock_clients = mock.Mock()
         self.base_flumine.clients = mock_clients

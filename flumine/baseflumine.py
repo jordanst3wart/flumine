@@ -16,7 +16,7 @@ from .markets.middleware import Middleware, SimulatedMiddleware
 from .execution.betfairexecution import BetfairExecution
 from .execution.simulatedexecution import SimulatedExecution
 from .order.process import process_current_orders
-from .controls.clientcontrols import BaseControl, MaxTransactionCount
+from .controls.clientcontrols import BaseControl
 from .controls.tradingcontrols import (
     StrategyExposure,
 )
