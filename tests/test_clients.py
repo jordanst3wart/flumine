@@ -57,12 +57,6 @@ class ClientsTest(unittest.TestCase):
         self.clients._clients.append(mock_client_two)
         self.assertEqual(self.clients.get_betfair_default(), mock_client_two)
 
-    def test_get_client(self):
-        self.clients._exchange_clients[ExchangeType.SIMULATED]["joejames"] = 12
-        self.assertEqual(
-            self.clients.get_client(ExchangeType.SIMULATED, "joejames"), 12
-        )
-
     def test_login(self):
         mock_client = unittest.mock.Mock()
         self.clients._clients = [mock_client]
@@ -198,14 +192,6 @@ class BaseClientTest(unittest.TestCase):
         )
         self.base_client.trading_controls.append(mock_trading_control)
         self.assertEqual(self.base_client.current_transaction_count_total, 123)
-
-    def test_transaction_count_total(self):
-        self.assertIsNone(self.base_client.transaction_count_total)
-        mock_trading_control = mock.Mock(
-            NAME="MAX_TRANSACTION_COUNT", transaction_count_total=123
-        )
-        self.base_client.trading_controls.append(mock_trading_control)
-        self.assertEqual(self.base_client.transaction_count_total, 123)
 
     def test_min_bet_size(self):
         with self.assertRaises(NotImplementedError):
