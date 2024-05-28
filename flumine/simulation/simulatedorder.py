@@ -113,17 +113,7 @@ class SimulatedOrder:
                 )
             if self.order.side == "BACK":
                 available_to_back = get_price(runner.ex.available_to_back, 0) or 1.01
-                if (
-                    not order_package.client.best_price_execution
-                    and available_to_back > price
-                ):
-                    self.size_lapsed += self.size_remaining
-                    return self._create_place_response(
-                        None,
-                        status="FAILURE",
-                        error_code="BET_LAPSED_PRICE_IMPROVEMENT_TOO_LARGE",
-                    )
-                elif time_in_force == "FILL_OR_KILL":
+                if time_in_force == "FILL_OR_KILL":
                     available_size = get_size(runner.ex.available_to_back, 0) or 0
                     if price > available_to_back:
                         self.size_cancelled += self.size_remaining
@@ -159,17 +149,8 @@ class SimulatedOrder:
                 available = runner.ex.available_to_lay
             else:
                 available_to_lay = get_price(runner.ex.available_to_lay, 0) or 1000
-                if (
-                    not order_package.client.best_price_execution
-                    and available_to_lay < price
-                ):
-                    self.size_lapsed += self.size_remaining
-                    return self._create_place_response(
-                        None,
-                        status="FAILURE",
-                        error_code="BET_LAPSED_PRICE_IMPROVEMENT_TOO_LARGE",
-                    )
-                elif time_in_force == "FILL_OR_KILL":
+
+                if time_in_force == "FILL_OR_KILL":
                     available_size = get_size(runner.ex.available_to_lay, 0) or 0
                     if price < available_to_lay:
                         self.size_cancelled += self.size_remaining

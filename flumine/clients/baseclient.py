@@ -24,7 +24,6 @@ class BaseClient:
         username: str = None,
         order_stream: bool = True,
         best_price_execution: bool = True,
-        min_bet_validation: bool = True,
         paper_trade: bool = False,
         market_recording_mode: bool = False,
         simulated_full_match: bool = False,
@@ -42,7 +41,6 @@ class BaseClient:
         self.interactive_login = interactive_login
         self.order_stream = order_stream
         self.best_price_execution = best_price_execution  # simulation only
-        self.min_bet_validation = min_bet_validation  # used in OrderValidation control
         self.paper_trade = paper_trade  # simulated order placement using live data
         self.market_recording_mode = market_recording_mode  # no order stream / workers
         self.simulated_full_match = (
@@ -105,6 +103,5 @@ class BaseClient:
             "betting_client": self.betting_client,
             "trading_controls": self.trading_controls,
             "order_stream": self.order_stream,
-            "best_price_execution": self.best_price_execution,
             "paper_trade": self.paper_trade,
         }
