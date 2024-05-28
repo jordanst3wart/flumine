@@ -3,7 +3,6 @@ from betfairlightweight.metadata import transaction_limit as betfair_transaction
 
 from .clients import ExchangeType
 
-DEFAULT_CAPITAL_BASE = 0
 DEFAULT_COMMISSION_BASE = 0.05
 
 
@@ -18,7 +17,6 @@ class BaseClient:
         self,
         betting_client=None,
         transaction_limit: Optional[int] = betfair_transaction_limit,
-        capital_base: int = DEFAULT_CAPITAL_BASE,
         commission_base: float = DEFAULT_COMMISSION_BASE,
         interactive_login: bool = False,
         username: str = None,
@@ -34,7 +32,6 @@ class BaseClient:
         self._username = username
         self.betting_client = betting_client
         self.transaction_limit = transaction_limit
-        self.capital_base = capital_base
         self.commission_base = commission_base  # not implemented
         self.interactive_login = interactive_login
         self.order_stream = order_stream
