@@ -163,11 +163,7 @@ def poll_market_closure(context: dict, flumine) -> None:
         market for market in list(flumine.markets.markets.values()) if market.closed
     ]
     for client in flumine.clients:
-        if (
-            client.EXCHANGE != ExchangeType.BETFAIR
-            or client.paper_trade
-            or client.market_recording_mode
-        ):
+        if client.EXCHANGE != ExchangeType.BETFAIR or client.paper_trade:
             continue
         for market in markets:
             if client.username not in market.orders_cleared:

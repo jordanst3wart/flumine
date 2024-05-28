@@ -71,8 +71,6 @@ class BaseFlumine:
         ):
             logger.info("using simulated middleware")
             self.add_market_middleware(SimulatedMiddleware())
-        # register default client controls (processed in order)
-        # self.add_client_control(client, MaxTransactionCount)
 
     def add_strategy(self, strategy: BaseStrategy) -> None:
         logger.info("Adding strategy %s", strategy)

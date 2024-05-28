@@ -23,9 +23,7 @@ class BaseClient:
         interactive_login: bool = False,
         username: str = None,
         order_stream: bool = True,
-        best_price_execution: bool = True,
         paper_trade: bool = False,
-        market_recording_mode: bool = False,
         simulated_full_match: bool = False,
         execution_cls=None,
     ):
@@ -40,9 +38,7 @@ class BaseClient:
         self.commission_base = commission_base  # not implemented
         self.interactive_login = interactive_login
         self.order_stream = order_stream
-        self.best_price_execution = best_price_execution  # simulation only
         self.paper_trade = paper_trade  # simulated order placement using live data
-        self.market_recording_mode = market_recording_mode  # no order stream / workers
         self.simulated_full_match = (
             simulated_full_match  # simulated 100% match on successful place
         )
