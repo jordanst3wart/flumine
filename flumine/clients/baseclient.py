@@ -91,13 +91,6 @@ class BaseClient:
             return self._username
 
     @property
-    def current_transaction_count_total(self) -> Optional[int]:
-        # current hours total transaction count
-        for control in self.trading_controls:
-            if control.NAME == "MAX_TRANSACTION_COUNT":
-                return control.current_transaction_count_total
-
-    @property
     def min_bet_size(self) -> Optional[float]:
         raise NotImplementedError
 
@@ -115,7 +108,6 @@ class BaseClient:
             "username": self.username,
             "exchange": self.EXCHANGE.value if self.EXCHANGE else None,
             "betting_client": self.betting_client,
-            "current_transaction_count_total": self.current_transaction_count_total,
             "trading_controls": self.trading_controls,
             "order_stream": self.order_stream,
             "best_price_execution": self.best_price_execution,

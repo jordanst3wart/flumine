@@ -127,11 +127,6 @@ class TestMaxTransactionCount(unittest.TestCase):
         self.trading_control.client.transaction_limit = None
         self.assertTrue(self.trading_control.safe)
 
-    def test_current_transaction_count_total(self):
-        self.trading_control.current_transaction_count = 1
-        self.trading_control.current_failed_transaction_count = 2
-        self.assertEqual(self.trading_control.current_transaction_count_total, 3)
-
     def test_transaction_count_total(self):
         self.trading_control.transaction_count = 1
         self.trading_control.failed_transaction_count = 2
