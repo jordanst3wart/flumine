@@ -1,5 +1,4 @@
 from typing import Optional
-from betfairlightweight.metadata import transaction_limit as betfair_transaction_limit
 
 from .clients import ExchangeType
 
@@ -14,7 +13,6 @@ class BaseClient:
     def __init__(
         self,
         betting_client=None,
-        transaction_limit: Optional[int] = betfair_transaction_limit,
         interactive_login: bool = False,
         username: str = None,
         order_stream: bool = True,
@@ -28,7 +26,6 @@ class BaseClient:
             ), "flumine requires resources, please set lightweight to False"
         self._username = username
         self.betting_client = betting_client
-        self.transaction_limit = transaction_limit  # TODO remove
         self.interactive_login = interactive_login
         self.order_stream = order_stream
         self.paper_trade = paper_trade  # simulated order placement using live data

@@ -37,6 +37,7 @@ class SimulatedOrder:
         logger.info("calling simulated order __call__")
         # simulates order matching
         if self._bsp_reconciled is False and market_book.bsp_reconciled:
+            logger.info("Is this used??? sp???")
             if self.take_sp:
                 runner = self._get_runner(market_book)
                 self._process_sp(market_book.publish_time_epoch, runner)
