@@ -221,6 +221,7 @@ class BaseFlumine:
             market_id = market_book["id"]
             stream_id = market_book["_stream_id"]
         else:
+            logger.info("close market event actually called.... with recorder = False")
             recorder = False
             market_id = market_book.market_id
             stream_id = market_book.streaming_unique_id
@@ -328,11 +329,8 @@ class BaseFlumine:
         logger.info("Starting flumine", extra=self.info)
         if len(self.clients) == 0:
             raise ClientError("No clients provided")
-        # simulated
-        if self.SIMULATED:
-            config.simulated = True
-        else:
-            config.simulated = False
+
+        config.simulated = self.SIMULATED
         # login
         self.clients.login()
         self.clients.update_account_details()

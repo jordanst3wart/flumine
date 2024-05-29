@@ -9,7 +9,6 @@ from .. import config
 logger = logging.getLogger(__name__)
 
 WIN_MINIMUM_ADJUSTMENT_FACTOR = 2.5
-PLACE_MINIMUM_ADJUSTMENT_FACTOR = 0  # todo implement correctly (https://en-betfair.custhelp.com/app/answers/detail/a_id/406)
 LIVE_STATUS = [
     OrderStatus.EXECUTABLE,
     OrderStatus.CANCELLING,

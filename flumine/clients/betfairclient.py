@@ -9,9 +9,7 @@ from .clients import ExchangeType
 logger = logging.getLogger(__name__)
 
 # default to GBP on error
-MIN_BET_SIZE = currency_parameters["GBP"]["min_bet_size"]
 MIN_BSP_LIABILITY = currency_parameters["GBP"]["min_bsp_liability"]
-MIN_BET_PAYOUT = currency_parameters["GBP"]["min_bet_payout"]
 
 
 class BetfairClient(BaseClient):
@@ -105,42 +103,6 @@ class BetfairClient(BaseClient):
                     "response": e,
                 },
             )
-
-    @property
-    def min_bet_size(self) -> Optional[float]:
-        if self.account_details:
-            try:
-                return currency_parameters[self.account_details.currency_code][
-                    "min_bet_size"
-                ]
-            except KeyError:
-                logger.warning(
-                    "min_bet_size KeyError: %s", self.account_details.currency_code
-                )
-                return MIN_BET_SIZE
-            except Exception as e:
-                logger.error("min_bet_size error: %s", e, exc_info=True)
-                return MIN_BET_SIZE
-        else:
-            return MIN_BET_SIZE
-
-    @property
-    def min_bet_payout(self) -> Optional[float]:
-        if self.account_details:
-            try:
-                return currency_parameters[self.account_details.currency_code][
-                    "min_bet_payout"
-                ]
-            except KeyError:
-                logger.warning(
-                    "min_bet_payout KeyError: %s" % self.account_details.currency_code
-                )
-                return MIN_BET_PAYOUT
-            except Exception as e:
-                logger.error("min_bet_payout error: %s", e, exc_info=True)
-                return MIN_BET_PAYOUT
-        else:
-            return MIN_BET_PAYOUT
 
     @property
     def min_bsp_liability(self) -> Optional[float]:

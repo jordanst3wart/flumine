@@ -37,8 +37,6 @@ class SimulatedExecution(BaseExecution):
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
         logger.info("SimulatedExecution execute_place used")
-        if order_package.client.paper_trade:
-            time.sleep(order_package.bet_delay + config.place_latency)
         market = self.flumine.markets.markets[order_package.market_id]
         for order, instruction in zip(order_package, order_package.place_instructions):
             with order.trade:
@@ -58,8 +56,6 @@ class SimulatedExecution(BaseExecution):
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
         logger.info("SimulatedExecution execute_cancel used")
-        if order_package.client.paper_trade:
-            time.sleep(config.cancel_latency)
         market = self.flumine.markets.markets[order_package.market_id]
 
         for order in order_package:
@@ -80,10 +76,7 @@ class SimulatedExecution(BaseExecution):
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
         logger.info("SimulatedExecution execute_place used")
-        if order_package.client.paper_trade:
-            time.sleep(config.update_latency)
         market = self.flumine.markets.markets[order_package.market_id]
-
         for order, instruction in zip(order_package, order_package.update_instructions):
             with order.trade:
                 simulated_response = order.simulated.update(
@@ -101,10 +94,6 @@ class SimulatedExecution(BaseExecution):
         self, order_package, http_session: Optional[requests.Session]
     ) -> None:
         logger.info("SimulatedExecution execute_replace used")
-        if (
-            order_package.client.paper_trade
-        ):  # todo should the cancel happen without a delay?
-            time.sleep(order_package.bet_delay + config.replace_latency)
         market = self.flumine.markets.markets[order_package.market_id]
 
         for order, instruction in zip(

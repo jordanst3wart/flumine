@@ -53,7 +53,6 @@ class BaseOrderPackage(BaseEvent):
         # following used for simulated execution
         self.processed = False
         self.bet_delay = bet_delay
-        self.simulated_delay = self.calc_simulated_delay()
 
     def retry(self):
         if self._retry and self._retry_count < self._max_retries:
@@ -69,17 +68,6 @@ class BaseOrderPackage(BaseEvent):
                     order.execution_complete()
                 else:
                     order.executable()
-
-    def calc_simulated_delay(self) -> float:
-        if self.client.execution.EXCHANGE == ExchangeType.SIMULATED:
-            if self.package_type == OrderPackageType.PLACE:
-                return config.place_latency + self.bet_delay
-            elif self.package_type == OrderPackageType.CANCEL:
-                return config.cancel_latency
-            elif self.package_type == OrderPackageType.UPDATE:
-                return config.update_latency
-            elif self.package_type == OrderPackageType.REPLACE:
-                return config.replace_latency + self.bet_delay
 
     @property
     def place_instructions(self) -> dict:
