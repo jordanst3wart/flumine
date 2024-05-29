@@ -111,7 +111,9 @@ class ClientsTest(unittest.TestCase):
 class BaseClientTest(unittest.TestCase):
     def setUp(self):
         self.mock_betting_client = mock.Mock(lightweight=False)
-        self.base_client = BaseClient(self.mock_betting_client, interactive_login=True, username="test")
+        self.base_client = BaseClient(
+            self.mock_betting_client, interactive_login=True, username="test"
+        )
 
     def test_init(self):
         self.assertEqual(self.base_client.betting_client, self.mock_betting_client)
