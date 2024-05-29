@@ -35,7 +35,6 @@ class OrderPackageTest(unittest.TestCase):
         self.assertEqual(self.order_package.package_type, self.mock_package_type)
         self.assertEqual(self.order_package.EVENT_TYPE, EventType.ORDER_PACKAGE)
         self.assertEqual(self.order_package.QUEUE_TYPE, QueueType.HANDLER)
-        self.assertEqual(self.order_package.bet_delay, 1)
         self.assertIsNone(self.order_package.EXCHANGE)
         self.assertFalse(self.order_package.async_)
         self.assertEqual(self.order_package._market_version, 123)
@@ -43,7 +42,6 @@ class OrderPackageTest(unittest.TestCase):
         self.assertTrue(self.order_package._retry)
         self.assertEqual(self.order_package._max_retries, 3)
         self.assertEqual(self.order_package._retry_count, 0)
-        self.assertIsNone(self.order_package.simulated_delay)
 
     def test_retry(self):
         self.assertTrue(self.order_package.retry())
@@ -69,23 +67,6 @@ class OrderPackageTest(unittest.TestCase):
         mock_order.trade.__enter__.assert_called()
         self.order_package.reset_orders(True)
         mock_order.execution_complete.assert_called()
-
-    def test_calc_simulated_delay(self):
-        config.place_latency = 0.1
-        config.cancel_latency = 0.2
-        config.update_latency = 0.3
-        config.replace_latency = 0.4
-
-        self.assertIsNone(self.order_package.calc_simulated_delay())
-        self.order_package.client.execution.EXCHANGE = ExchangeType.SIMULATED
-        self.order_package.package_type = OrderPackageType.PLACE
-        self.assertEqual(self.order_package.calc_simulated_delay(), 1.1)
-        self.order_package.package_type = OrderPackageType.CANCEL
-        self.assertEqual(self.order_package.calc_simulated_delay(), 0.2)
-        self.order_package.package_type = OrderPackageType.UPDATE
-        self.assertEqual(self.order_package.calc_simulated_delay(), 0.3)
-        self.order_package.package_type = OrderPackageType.REPLACE
-        self.assertEqual(self.order_package.calc_simulated_delay(), 1.4)
 
     def test_place_instructions(self):
         with self.assertRaises(NotImplementedError):

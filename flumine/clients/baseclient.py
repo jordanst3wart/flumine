@@ -3,8 +3,6 @@ from betfairlightweight.metadata import transaction_limit as betfair_transaction
 
 from .clients import ExchangeType
 
-DEFAULT_COMMISSION_BASE = 0.05
-
 
 class BaseClient:
     """
@@ -17,12 +15,11 @@ class BaseClient:
         self,
         betting_client=None,
         transaction_limit: Optional[int] = betfair_transaction_limit,
-        commission_base: float = DEFAULT_COMMISSION_BASE,
         interactive_login: bool = False,
         username: str = None,
         order_stream: bool = True,
         paper_trade: bool = False,
-        simulated_full_match: bool = False,
+        simulated_full_match: bool = False,  # TODO trial adding
         execution_cls=None,
     ):
         if hasattr(betting_client, "lightweight"):
@@ -31,12 +28,11 @@ class BaseClient:
             ), "flumine requires resources, please set lightweight to False"
         self._username = username
         self.betting_client = betting_client
-        self.transaction_limit = transaction_limit
-        self.commission_base = commission_base  # not implemented
+        self.transaction_limit = transaction_limit  # TODO remove
         self.interactive_login = interactive_login
         self.order_stream = order_stream
         self.paper_trade = paper_trade  # simulated order placement using live data
-        self.simulated_full_match = (
+        self.simulated_full_match = (  # TODO maybe remove
             simulated_full_match  # simulated 100% match on successful place
         )
 
