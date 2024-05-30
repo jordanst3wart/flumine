@@ -152,16 +152,7 @@ class BaseStrategy:
                 )
             )
             return False
-        # TODO remove runner context live_trade_count
-        # TODO remove runner context trade_count
-        # TODO remove max_live_trade_count
-        # TODO remove max_trade_count
-        # TODO remove trade_count
-
         return True
-
-    # TODO remove
-    # runner_context.executable_orders
 
     def get_runner_context(
         self, market_id: str, selection_id: int, handicap: float = 0
