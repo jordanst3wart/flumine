@@ -187,16 +187,6 @@ class BaseFlumine:
                     )
                 market.update_market_catalogue = False
 
-                for strategy in self.strategies:
-                    if (
-                        market.market_book
-                        and market.market_book.streaming_unique_id
-                        in strategy.stream_ids
-                    ) or strategy.market_cached(market.market_id):
-                        utils.call_strategy_error_handling(
-                            strategy.process_market_catalogue, market, market_catalogue
-                        )
-
     # TODO investigate why this function is called so much
     def _process_current_orders(self, event: events.CurrentOrdersEvent) -> None:
         # update state
@@ -204,6 +194,9 @@ class BaseFlumine:
             process_current_orders(
                 self.markets, self.strategies, event, self._add_market
             )
+        # iterating over all the markets seems a bit dumb...
+        # shouldn't it just iterate over the markets that have orders?
+        # or just the current orders
         for market in self.markets:
             if market.closed is False and market.blotter.active:
                 for strategy in self.strategies:

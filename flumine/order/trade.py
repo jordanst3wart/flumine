@@ -132,42 +132,6 @@ class Trade:
         self.orders.append(replacement_order)
         return replacement_order
 
-    def create_order_from_current(
-        self, client, current_order: CurrentOrder, order_id: str
-    ) -> BetfairOrder:
-        if current_order.order_type == "LIMIT":
-            order_type = LimitOrder(
-                current_order.price_size.price,
-                current_order.price_size.size,
-                current_order.persistence_type,
-            )
-        elif current_order.order_type == "LIMIT_ON_CLOSE":
-            order_type = LimitOnCloseOrder(
-                current_order.bsp_liability, current_order.price_size.price
-            )
-        elif current_order.order_type == "MARKET_ON_CLOSE":
-            order_type = MarketOnCloseOrder(current_order.bsp_liability)
-        else:
-            raise NotImplementedError
-        order = BetfairOrder(
-            trade=self,
-            side=current_order.side,
-            order_type=order_type,
-            handicap=current_order.handicap,
-        )
-        order.bet_id = current_order.bet_id
-        order.id = order_id
-        order.update_client(client)
-        # update dates
-        order.date_time_created = current_order.placed_date
-        order.date_time_execution_complete = (
-            current_order.matched_date
-            or current_order.cancelled_date
-            or current_order.lapsed_date
-        )
-        self.orders.append(order)
-        return order
-
     @property
     def elapsed_seconds(self) -> Optional[float]:
         for order in self.orders:
