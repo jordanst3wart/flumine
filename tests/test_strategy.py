@@ -114,8 +114,6 @@ class BaseStrategyTest(unittest.TestCase):
             context={"trigger": 0.123},
             max_selection_exposure=1,
             max_order_exposure=2,
-            max_trade_count=5,
-            max_live_trade_count=3,
             multi_order_trades=False,
         )
 
@@ -131,10 +129,7 @@ class BaseStrategyTest(unittest.TestCase):
         self.assertEqual(self.strategy.max_selection_exposure, 1)
         self.assertEqual(self.strategy.max_order_exposure, 2)
         self.assertIsNone(self.strategy.clients)
-        self.assertEqual(self.strategy.max_trade_count, 5)
-        self.assertEqual(self.strategy.max_live_trade_count, 3)
         self.assertEqual(self.strategy.streams, [])
-        self.assertEqual(self.strategy.historic_stream_ids, set())
         self.assertEqual(self.strategy.name_hash, "a94a8fe5ccb19")
         self.assertFalse(self.strategy.multi_order_trades)
         self.assertEqual(strategy.STRATEGY_NAME_HASH_LENGTH, 13)
@@ -170,9 +165,6 @@ class BaseStrategyTest(unittest.TestCase):
     def test_process_market_book(self):
         self.strategy.process_market_book(None, None)
 
-    def test_process_market_catalogue(self):
-        self.strategy.process_market_catalogue(None, None)
-
     def test_process_orders(self):
         self.strategy.process_orders(None, None)
 
@@ -191,80 +183,12 @@ class BaseStrategyTest(unittest.TestCase):
         self.strategy.remove_market("1.23")
         self.assertEqual(self.strategy._invested, {("1.24", 112, 7): 3})
 
-    def test_validate_order(self):
-        mock_order = mock.Mock()
-        mock_order.trade.id = "99"  # Unused trade id, nonexistent in runner_context
-        # No orders/trades placed yet
-        runner_context = RunnerContextMock()
-        self.strategy.log_validation = True
-        self.assertTrue(self.strategy.validate_order(runner_context, mock_order))
-        # trade count (5 is limit)
-        runner_context = RunnerContextMock(["1", "2", "3", "4", "5"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-        # live trade count (3 is limit)
-        runner_context = RunnerContextMock([], ["3", "4", "5"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-        # place elapsed
-        runner_context = RunnerContextMock(
-            live_trades=["1"], placed_elapsed_seconds=0.49
-        )
-        mock_order.trade.place_reset_seconds = 0.5
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-        # reset elapsed
-        runner_context = RunnerContextMock(
-            completed_trades=["1"], placed_elapsed_seconds=1, reset_elapsed_seconds=0.49
-        )
-        mock_order.trade.reset_seconds = 0.5
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-
-    def test_validate_order_reuse_completed_trade(self):
-        """Reusing a completed Trade object to place a new order."""
-        mock_order = mock.Mock()
-        mock_order.trade.id = "1"  # Reuse completed trade
-        # trade count - at the limit (5)
-        runner_context = RunnerContextMock(["1", "2", "3", "4", "5"])
-        self.assertTrue(self.strategy.validate_order(runner_context, mock_order))
-        # live trade count- at the limit (3)
-        runner_context = RunnerContextMock(["1"], ["3", "4", "5"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-        # trade count - over the limit (>5) (force=True was used)
-        runner_context = RunnerContextMock(["1", "2", "3", "4", "5", "6"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-        # live trade count- over the limit (>3) (force=True was used)
-        runner_context = RunnerContextMock(["1"], ["3", "4", "5", "6"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-
-    def test_validate_order_reuse_live_trade(self):
-        """Reusing a live Trade object to place a new order."""
-        mock_order = mock.Mock()
-        mock_order.trade.id = "5"  # Reuse live trade
-        # trade count - at the limit (5)
-        runner_context = RunnerContextMock(["1", "2", "3"], ["4", "5"])
-        self.assertTrue(self.strategy.validate_order(runner_context, mock_order))
-        # live trade count - at the limit (3)
-        runner_context = RunnerContextMock([], ["3", "4", "5"])
-        self.assertTrue(self.strategy.validate_order(runner_context, mock_order))
-        # trade count - over the limit (>5) (force=True was used)
-        runner_context = RunnerContextMock(["1", "2", "3", "4"], ["5", "6"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-        # live trade count- over the limit (>3) (force=True was used)
-        runner_context = RunnerContextMock([], ["3", "4", "5", "6"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
-
     def test_validate_order_multi(self):
         mock_order = mock.Mock()
         mock_order.trade.id = "6"  # In live trades
         runner_context = RunnerContextMock([], ["1", "2", "3", "4", "5", "6"])
-        self.assertFalse(self.strategy.validate_order(runner_context, mock_order))
         self.strategy.multi_order_trades = True
         self.assertTrue(self.strategy.validate_order(runner_context, mock_order))
-
-    def test_executable_orders(self):
-        mock_context = mock.Mock(executable_orders=True)
-        self.strategy._invested = {("2", 456, 1): mock_context}
-        self.assertFalse(self.strategy.has_executable_orders("1", 123, 1.0))
-        self.assertFalse(self.strategy.has_executable_orders("2", 123, 1.0))
-        self.assertTrue(self.strategy.has_executable_orders("2", 456, 1.0))
 
     def test_get_runner_context(self):
         mock_context = mock.Mock(invested=True)
@@ -298,8 +222,6 @@ class BaseStrategyTest(unittest.TestCase):
         mock_stream = mock.Mock(stream_id=321)
         self.strategy.streams = [mock_stream]
         self.assertEqual(self.strategy.stream_ids, [321])
-        self.strategy.historic_stream_ids.add(123)
-        self.assertEqual(self.strategy.stream_ids, {123})
 
     def test_info(self):
         self.assertEqual(
@@ -313,10 +235,8 @@ class BaseStrategyTest(unittest.TestCase):
                 "stream_ids": [],
                 "streaming_timeout": self.streaming_timeout,
                 "context": {"trigger": 0.123},
-                "max_live_trade_count": 3,
                 "max_order_exposure": 2,
                 "max_selection_exposure": 1,
-                "max_trade_count": 5,
             },
         )
 

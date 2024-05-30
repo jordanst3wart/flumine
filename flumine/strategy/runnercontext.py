@@ -10,14 +10,12 @@ class RunnerContext:
 
     def __init__(self, selection_id: int):
         self.selection_id = selection_id
-        self.invested = False
         self.datetime_last_placed = None
         self.datetime_last_reset = None
         self.trades = []
         self.live_trades = []
 
     def place(self, trade_id) -> None:
-        self.invested = True
         self.datetime_last_placed = datetime.datetime.now(datetime.UTC)
         if trade_id not in self.trades:
             self.trades.append(trade_id)
@@ -40,14 +38,6 @@ class RunnerContext:
             return True
         else:
             return False
-
-    @property
-    def trade_count(self) -> int:
-        return len(self.trades)
-
-    @property
-    def live_trade_count(self) -> int:
-        return len(self.live_trades)
 
     @property
     def placed_elapsed_seconds(self) -> Optional[float]:

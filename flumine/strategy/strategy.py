@@ -48,8 +48,6 @@ class BaseStrategy:
         context: dict = None,
         max_selection_exposure: float = 100,
         max_order_exposure: float = 10,
-        max_trade_count: int = 1e6,
-        max_live_trade_count: int = 1,
         multi_order_trades: bool = False,
     ):
         """
@@ -63,8 +61,6 @@ class BaseStrategy:
         :param context: Dictionary holding additional user specific vars
         :param max_selection_exposure: Max exposure per selection
         :param max_order_exposure: Max exposure per order
-        :param max_trade_count: max total number of trades per runner
-        :param max_live_trade_count: max live (with executable orders) trades per runner
         :param multi_order_trades: allow multiple live orders per trade
         """
         self.market_filter = market_filter
@@ -78,13 +74,10 @@ class BaseStrategy:
         self.max_selection_exposure = max_selection_exposure
         self.max_order_exposure = max_order_exposure
         self.clients = None
-        self.max_trade_count = max_trade_count
-        self.max_live_trade_count = max_live_trade_count
         self.multi_order_trades = multi_order_trades
 
         self._invested = {}  # {(marketId, selectionId, handicap): RunnerContext}
         self.streams = []  # list of streams strategy is subscribed
-        self.historic_stream_ids = set()
         # cache
         self.name_hash = create_cheap_hash(self.name, STRATEGY_NAME_HASH_LENGTH)
 
@@ -99,12 +92,6 @@ class BaseStrategy:
 
     def process_new_market(self, market: Market, market_book: MarketBook) -> None:
         # called when a market is newly added to the framework
-        return
-
-    def process_market_catalogue(
-        self, market: Market, market_catalogue: MarketCatalogue
-    ) -> None:
-        # Called when a market catalogue is added or updated
         return
 
     def check_market_book(self, market: Market, market_book: MarketBook) -> bool:
@@ -165,33 +152,7 @@ class BaseStrategy:
                 )
             )
             return False
-
-        if (
-            (runner_context.trade_count == self.max_trade_count)
-            and (order.trade.id not in runner_context.trades)
-        ) or (runner_context.trade_count > self.max_trade_count):
-            order.violation_msg = (
-                "strategy.validate_order failed: trade_count (%s) >= max_trade_count (%s)"
-                % (runner_context.trade_count, self.max_trade_count)
-            )
-            return False
-        elif (
-            (runner_context.live_trade_count == self.max_live_trade_count)
-            and (order.trade.id not in runner_context.live_trades)
-        ) or (runner_context.live_trade_count > self.max_live_trade_count):
-            order.violation_msg = (
-                "strategy.validate_order failed: live_trade_count (%s) >= max_live_trade_count (%s)"
-                % (runner_context.live_trade_count, self.max_live_trade_count)
-            )
-            return False
-
         return True
-
-    def has_executable_orders(
-        self, market_id: str, selection_id: int, handicap: float = 0
-    ) -> bool:
-        runner_context = self.get_runner_context(market_id, selection_id, handicap)
-        return runner_context.executable_orders
 
     def get_runner_context(
         self, market_id: str, selection_id: int, handicap: float = 0
@@ -218,10 +179,7 @@ class BaseStrategy:
 
     @property
     def stream_ids(self) -> Union[list, set]:
-        if self.historic_stream_ids:
-            return self.historic_stream_ids
-        else:
-            return [stream.stream_id for stream in self.streams]
+        return [stream.stream_id for stream in self.streams]
 
     @property
     def info(self) -> dict:
@@ -234,8 +192,6 @@ class BaseStrategy:
             "stream_ids": list(self.stream_ids),
             "max_selection_exposure": self.max_selection_exposure,
             "max_order_exposure": self.max_order_exposure,
-            "max_live_trade_count": self.max_live_trade_count,
-            "max_trade_count": self.max_trade_count,
             "context": self.context,
             "name_hash": self.name_hash,
         }

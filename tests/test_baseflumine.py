@@ -197,48 +197,6 @@ class BaseFlumineTest(unittest.TestCase):
         mock_strategy.remove_market.assert_called_with(mock_market.market_id)
 
     @mock.patch("flumine.baseflumine.events")
-    def test__process_market_catalogues(self, mock_events):
-        # Matches by stream id
-        mock_strategy_1 = mock.Mock(stream_ids=[1, 2])
-        mock_strategy_1.market_cached.return_value = True
-        # Does not match
-        mock_strategy_2 = mock.Mock(stream_ids=[3, 4])
-        mock_strategy_2.market_cached.return_value = False
-        # Matches by market id being cached
-        mock_strategy_3 = mock.Mock(stream_ids=[5, 6])
-        mock_strategy_3.market_cached.return_value = True
-
-        mock_market = mock.Mock(market_catalogue=None, market_id="1.23")
-        mock_market.market_book.streaming_unique_id = 1
-
-        self.base_flumine.strategies = [
-            mock_strategy_1,
-            mock_strategy_2,
-            mock_strategy_3,
-        ]
-        self.base_flumine.markets = mock.Mock(markets={"1.23": mock_market})
-
-        mock_market_catalogue = mock.Mock(market_id="1.23")
-        mock_event = mock.Mock(event=[mock_market_catalogue])
-        self.base_flumine._process_market_catalogues(mock_event)
-
-        self.assertEqual(mock_market.market_catalogue, mock_market_catalogue)
-        self.assertFalse(mock_market.update_market_catalogue)
-
-        # Expensive method should not get called if stream id matches the strategy
-        mock_strategy_1.market_cached.assert_not_called()
-        mock_strategy_2.market_cached.assert_called_once_with("1.23")
-        mock_strategy_3.market_cached.assert_called_once_with("1.23")
-
-        mock_strategy_1.process_market_catalogue.assert_called_once_with(
-            mock_market, mock_market_catalogue
-        )
-        mock_strategy_2.process_market_catalogue.assert_not_called()
-        mock_strategy_3.process_market_catalogue.assert_called_once_with(
-            mock_market, mock_market_catalogue
-        )
-
-    @mock.patch("flumine.baseflumine.events")
     def test__process_market_catalogues_missing_book(self, mock_events):
         # Matches by stream id
         mock_strategy_1 = mock.Mock(stream_ids=[1, 2])
