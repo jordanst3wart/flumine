@@ -414,7 +414,6 @@ class MarketTest(unittest.TestCase):
             {
                 "betCount": 1,
                 "betOutcome": "WON",
-                "commission": 1.0,
                 "customerStrategyRef": config.customer_strategy_ref,
                 "eventId": mock_event_id,
                 "eventTypeId": mock_event_type_id,

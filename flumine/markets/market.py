@@ -214,7 +214,6 @@ class Market:
             "settledDate": None,
             "betCount": len(orders),
             "betOutcome": "WON" if profit >= 0 else "LOST",
-            "commission": round(max(profit * client.commission_base, 0), 2),
             "profit": profit,
         }
 
