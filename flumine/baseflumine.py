@@ -209,35 +209,22 @@ class BaseFlumine:
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
         logger.info("close market event actually called")
         market_book = event.event
-        if isinstance(market_book, dict):
-            recorder = True
-            market_id = market_book["id"]
-            stream_id = market_book["_stream_id"]
-        else:
-            logger.info("close market event actually called.... with recorder = False")
-            recorder = False
-            market_id = market_book.market_id
-            stream_id = market_book.streaming_unique_id
+        recorder = False
+        market_id = market_book.market_id
+        stream_id = market_book.streaming_unique_id
         market = self.markets.markets.get(market_id)
-        if market is None:
-            logger.warning(
-                "Market %s not present when closing",
-                market_id,
-                extra={"market_id": market_id, **self.info},
-            )
-            return
+
         # process market
         if market.closed is False:
             market.close_market()
-        if recorder is False:
-            market(market_book)
-            market.blotter.process_closed_market(market, event.event)
+        market(market_book)
+        market.blotter.process_closed_market(market, event.event)
 
         for strategy in self.strategies:
             if stream_id in strategy.stream_ids:
                 strategy.process_closed_market(market, event.event)
 
-        if recorder is False and self.clients.simulated:
+        if self.clients.simulated:
             # simulate ClearedOrdersEvent
             cleared_orders = resources.ClearedOrders(
                 moreAvailable=False, clearedOrders=[]
@@ -273,12 +260,6 @@ class BaseFlumine:
     def _process_cleared_orders(self, event):
         market_id = event.event.market_id
         market = self.markets.markets.get(market_id)
-        if market is None:
-            logger.warning(
-                "Market %s not present when clearing" % market_id,
-                extra={"market_id": market_id, **self.info},
-            )
-            return
 
         meta_orders = market.blotter.process_cleared_orders(event.event)
         logger.debug(

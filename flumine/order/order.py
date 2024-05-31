@@ -320,9 +320,6 @@ class BaseOrder:
             "client": self.client.username if self.client else None,
         }
 
-    def json(self) -> str:
-        return json.dumps(self.info)
-
     def __repr__(self):
         return "Order {0}: {1}".format(
             self.bet_id, self.status.value if self.status else None

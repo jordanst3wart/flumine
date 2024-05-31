@@ -604,9 +604,6 @@ class BetfairOrderTest(unittest.TestCase):
             },
         )
 
-    def test_json(self):
-        self.assertTrue(isinstance(self.order.json(), str))
-
     def test_set_invalid_sep(self):
         with self.assertRaises(ValueError):
             self.order.sep = "@"
