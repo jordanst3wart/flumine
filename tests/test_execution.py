@@ -5,7 +5,6 @@ from unittest.mock import call
 
 from betfairlightweight import BetfairError
 
-from flumine import config
 from flumine.clients.clients import ExchangeType
 from flumine.exceptions import OrderExecutionError
 from flumine.execution.baseexecution import (
