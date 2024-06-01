@@ -45,7 +45,6 @@ class BaseStrategy:
         context: dict = None,
         max_selection_exposure: float = 100,
         max_order_exposure: float = 10,
-        multi_order_trades: bool = False,
     ):
         """
         :param market_filter: Streaming market filter dict or list of market filters
@@ -58,7 +57,6 @@ class BaseStrategy:
         :param context: Dictionary holding additional user specific vars
         :param max_selection_exposure: Max exposure per selection
         :param max_order_exposure: Max exposure per order
-        :param multi_order_trades: allow multiple live orders per trade
         """
         self.market_filter = market_filter
         self.market_data_filter = market_data_filter or DEFAULT_MARKET_DATA_FILTER
@@ -70,9 +68,8 @@ class BaseStrategy:
         self.max_selection_exposure = max_selection_exposure
         self.max_order_exposure = max_order_exposure
         self.clients = None
-        self.multi_order_trades = multi_order_trades
 
-        self._invested = {}  # {(marketId, selectionId, handicap): RunnerContext}
+        self._invested = {}  # {(marketId, selectionId): RunnerContext}
         self.streams = []  # list of streams strategy is subscribed
         # cache
         self.name_hash = create_cheap_hash(self.name, STRATEGY_NAME_HASH_LENGTH)
@@ -118,11 +115,8 @@ class BaseStrategy:
         for i in to_remove:
             del self._invested[i]
 
+
     def validate_order(self, runner_context: RunnerContext, order) -> bool:
-        # allow multiple orders per trade
-        if self.multi_order_trades:
-            if order.trade.id in runner_context.live_trades:
-                return True
         # validate context
         reset_elapsed_seconds = runner_context.reset_elapsed_seconds
         if reset_elapsed_seconds and reset_elapsed_seconds < order.trade.reset_seconds:
@@ -151,15 +145,9 @@ class BaseStrategy:
         return True
 
     def get_runner_context(
-        self, market_id: str, selection_id: int, handicap: float = 0
+        self, market_id: str, selection_id: int
     ) -> RunnerContext:
-        try:
-            return self._invested[(market_id, selection_id, handicap)]
-        except KeyError:
-            self._invested[(market_id, selection_id, handicap)] = runner_context = (
-                RunnerContext(selection_id)
-            )
-            return runner_context
+        return self._invested[(market_id, selection_id)]
 
     def market_cached(self, market_id: str) -> bool:
         """Checks if market_id is present in any of the strategy's stream caches."""
@@ -209,27 +197,11 @@ class Strategies:
             logger.warning("Strategy of same name '%s' already added", strategy)
         strategy.clients = clients
         self._strategies.append(strategy)
-        try:
-            strategy.add(flumine)
-        except TypeError:  # Wrong call signature
-            logger.warning(
-                "Deprecation warning: Call signature of BaseStrategy.add(self) "
-                "has changed to BaseStrategy.add(self, flumine). Please update "
-                f"{strategy.__class__.__name__} to match the new call signature."
-            )
-            strategy.add()
+        strategy.add(flumine)
 
     def start(self, flumine) -> None:
         for s in self:
-            try:
-                s.start(flumine)
-            except TypeError:  # Wrong call signature
-                logger.warning(
-                    "Deprecation warning: Call signature of BaseStrategy.start(self) "
-                    "has changed to BaseStrategy.start(self, flumine). Please update "
-                    f"{s.__class__.__name__} to match the new call signature."
-                )
-                s.start()
+            s.start(flumine)
 
     def finish(self, flumine) -> None:
         for s in self:

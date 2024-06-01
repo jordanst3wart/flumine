@@ -117,7 +117,6 @@ class TradeTest(unittest.TestCase):
             replacement_order.order_type.persistence_type,
             mock_order.order_type.persistence_type,
         )
-        self.assertEqual(replacement_order.handicap, mock_order.handicap)
         self.assertEqual(replacement_order.sep, mock_order.sep)
         self.assertEqual(replacement_order.context, mock_order.context)
         self.assertEqual(replacement_order.notes, mock_order.notes)

@@ -59,29 +59,6 @@ class StrategiesTest(unittest.TestCase):
         self.strategies.start(mock_flumine)
         mock_strategy.start.assert_called_with(mock_flumine)
 
-    @mock.patch("flumine.strategy.strategy.logger")
-    def test_deprecated_calls(self, mock_logger: mock.Mock):
-        """
-        Tests backwards compatibility with the old call signatures
-        of add() and start() methods of BaseStreategy. This test may
-        be removed in the future together with the deprecation warning.
-        """
-        mock_clients = mock.Mock()
-        mock_flumine = mock.Mock()
-        old_base_strategy = strategy.BaseStrategy({})
-        old_base_strategy.add = lambda: None  # Mimic old call signature
-        old_base_strategy.start = lambda: None  # Mimic old call signature
-        mock_strategy = mock.Mock(wraps=old_base_strategy)
-        # Old add() implementation
-        self.strategies(mock_strategy, mock_clients, mock_flumine)
-        mock_logger.warning.assert_called()  # User warned
-        mock_strategy.add.assert_called_with()  # Called with the old signature
-        # Old start() implementation
-        mock_logger.reset_mock()
-        self.strategies.start(mock_flumine)
-        mock_logger.warning.assert_called()  # User warned
-        mock_strategy.start.assert_called_with()  # Called with the old signature
-
     def test_finish(self):
         mock_flumine = mock.Mock()
         mock_strategy = mock.Mock()
@@ -113,7 +90,6 @@ class BaseStrategyTest(unittest.TestCase):
             context={"trigger": 0.123},
             max_selection_exposure=1,
             max_order_exposure=2,
-            multi_order_trades=False,
         )
 
     def test_init(self):
@@ -129,7 +105,6 @@ class BaseStrategyTest(unittest.TestCase):
         self.assertIsNone(self.strategy.clients)
         self.assertEqual(self.strategy.streams, [])
         self.assertEqual(self.strategy.name_hash, "a94a8fe5ccb19")
-        self.assertFalse(self.strategy.multi_order_trades)
         self.assertEqual(strategy.STRATEGY_NAME_HASH_LENGTH, 13)
         self.assertEqual(
             strategy.DEFAULT_MARKET_DATA_FILTER,
@@ -174,12 +149,12 @@ class BaseStrategyTest(unittest.TestCase):
 
     def test_remove_market(self):
         self.strategy._invested = {
-            ("1.23", 456, 7): 1,
-            ("1.23", 891, 7): 2,
-            ("1.24", 112, 7): 3,
+            ("1.23", 456): 1,
+            ("1.23", 891): 2,
+            ("1.24", 112): 3,
         }
         self.strategy.remove_market("1.23")
-        self.assertEqual(self.strategy._invested, {("1.24", 112, 7): 3})
+        self.assertEqual(self.strategy._invested, {("1.24", 112): 3})
 
     def test_validate_order_multi(self):
         mock_order = mock.Mock()
@@ -190,10 +165,10 @@ class BaseStrategyTest(unittest.TestCase):
 
     def test_get_runner_context(self):
         mock_context = mock.Mock(invested=True)
-        self.strategy._invested = {("2", 456, 0): mock_context}
-        self.assertEqual(self.strategy.get_runner_context("2", 456, 0), mock_context)
-        self.strategy.get_runner_context("2", 789, 0)
-        self.assertEqual(len(self.strategy._invested), 2)
+        self.strategy._invested = {("2", 456): mock_context}
+        self.assertEqual(self.strategy.get_runner_context("2", 456), mock_context)
+        self.strategy.get_runner_context("2", 456)
+        self.assertEqual(len(self.strategy._invested), 1)
 
     def test_market_cached(self):
         # This is not a good test as it relies too much on implementation details.

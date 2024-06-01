@@ -74,12 +74,11 @@ class Blotter:
         self,
         strategy,
         selection_id: int,
-        handicap: float = 0,
         order_status: Optional[List[OrderStatus]] = None,
         matched_only: Optional[bool] = None,
     ) -> list:
         """Returns all orders related to a strategy selection."""
-        orders = self._strategy_selection_orders[(strategy, selection_id, handicap)]
+        orders = self._strategy_selection_orders[(strategy, selection_id)]
         if order_status:
             orders = [o for o in orders if o.status in order_status]
         if matched_only:
@@ -113,10 +112,7 @@ class Blotter:
         )
         for order in self:
             for runner in market_book.runners:
-                if (order.selection_id, order.handicap) == (
-                    runner.selection_id,
-                    runner.handicap,
-                ):
+                if order.selection_id == runner.selection_id:
                     order.runner_status = runner.status
                     order.market_type = market_book.market_definition.market_type
                     order.each_way_divisor = (
@@ -225,7 +221,7 @@ class Blotter:
         self._trades[order.trade.id].append(order)
         self._strategy_orders[strategy].append(order)
         self._strategy_selection_orders[
-            (strategy, order.selection_id, order.handicap)
+            (strategy, order.selection_id)
         ].append(order)
         client = order.client
         self._client_orders[client].append(order)

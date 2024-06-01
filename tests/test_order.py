@@ -34,10 +34,9 @@ class BaseOrderTest(unittest.TestCase):
         self.assertEqual(self.order.side, "BACK")
         self.assertEqual(self.order.order_type, self.mock_order_type)
         self.assertEqual(self.order.selection_id, self.mock_trade.selection_id)
-        self.assertEqual(self.order.handicap, 1)
         self.assertEqual(
             self.order.lookup,
-            (self.order.market_id, self.order.selection_id, self.order.handicap),
+            (self.order.market_id, self.order.selection_id),
         )
         self.assertIsNone(self.order.client)
         self.assertIsNone(self.order.runner_status)
@@ -282,7 +281,7 @@ class BaseOrderTest(unittest.TestCase):
     def test_lookup(self):
         self.assertEqual(
             self.order.lookup,
-            (self.mock_trade.market_id, self.mock_trade.selection_id, 1),
+            (self.mock_trade.market_id, self.mock_trade.selection_id),
         )
 
     def test_repr(self):
@@ -295,6 +294,7 @@ class BaseOrderTest(unittest.TestCase):
     def test_customer_order_ref(self):
         self.order.trade.strategy.name_hash = "my_name_hash"
         self.order.id = 1234
+        self.order.sep = "-"
         self.assertEqual("my_name_hash-1234", self.order.customer_order_ref)
 
         self.order.sep = "I"
@@ -443,7 +443,6 @@ class BetfairOrderTest(unittest.TestCase):
             self.order.create_place_instruction(),
             {
                 "customerOrderRef": self.order.customer_order_ref,
-                "handicap": 0,
                 "limitOrder": self.mock_order_type.place_instruction(),
                 "orderType": "LIMIT",
                 "selectionId": self.mock_trade.selection_id,
@@ -455,7 +454,6 @@ class BetfairOrderTest(unittest.TestCase):
             self.order.create_place_instruction(),
             {
                 "customerOrderRef": self.order.customer_order_ref,
-                "handicap": 0,
                 "limitOnCloseOrder": self.mock_order_type.place_instruction(),
                 "orderType": "LIMIT_ON_CLOSE",
                 "selectionId": self.mock_trade.selection_id,
@@ -467,7 +465,6 @@ class BetfairOrderTest(unittest.TestCase):
             self.order.create_place_instruction(),
             {
                 "customerOrderRef": self.order.customer_order_ref,
-                "handicap": 0,
                 "marketOnCloseOrder": self.mock_order_type.place_instruction(),
                 "orderType": "MARKET_ON_CLOSE",
                 "selectionId": self.mock_trade.selection_id,
@@ -564,7 +561,6 @@ class BetfairOrderTest(unittest.TestCase):
             self.order.info,
             {
                 "bet_id": None,
-                "handicap": self.order.handicap,
                 "id": self.order.id,
                 "date_time_created": str(self.order.date_time_created),
                 "market_id": self.mock_trade.market_id,

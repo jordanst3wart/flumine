@@ -45,7 +45,7 @@ class SimulatedOrderTest(unittest.TestCase):
         """
         self.mock_order.side = side
         return BetfairOrder(
-            mock.Mock(), side, order_type, handicap
+            mock.Mock(), side, order_type
         ).create_place_instruction()
 
     def mock_betfair_place_instruction_fill_or_kill(
