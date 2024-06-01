@@ -18,6 +18,5 @@ class FlumineTest(unittest.TestCase):
         assert repr(self.flumine) == "<Flumine>"
 
     # def test_trade(self):
-        # self.flumine.add_strategy()
-        # self.flumine.run()
-
+    # self.flumine.add_strategy()
+    # self.flumine.run()
