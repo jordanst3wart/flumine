@@ -102,7 +102,11 @@ class Market:
             return t.update_order(order, new_persistence_type, force)
 
     def replace_order(
-        self, order: BetfairOrder, new_price: float, market_version: int = None, force: bool = False
+        self,
+        order: BetfairOrder,
+        new_price: float,
+        market_version: int = None,
+        force: bool = False,
     ) -> bool:
         with self.transaction(client=order.client) as t:
             return t.replace_order(order, new_price, market_version, force)
