@@ -243,9 +243,7 @@ class BaseFlumineTest(unittest.TestCase):
         self.base_flumine._process_current_orders(mock_event)
         mock_process_current_orders.assert_called_with(
             self.base_flumine.markets,
-            self.base_flumine.strategies,
             mock_event,
-            self.base_flumine._add_market,
         )
         mock_market.blotter.strategy_orders.assert_called_with(mock_strategy)
         mock_call_process_orders_error_handling.assert_called_with(
