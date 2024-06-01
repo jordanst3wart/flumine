@@ -144,7 +144,11 @@ class BaseStrategy:
         return True
 
     def get_runner_context(self, market_id: str, selection_id: int) -> RunnerContext:
-        return self._invested[(market_id, selection_id)]
+        try:
+            return self._invested[(market_id, selection_id)]
+        except KeyError:
+            self._invested[(market_id, selection_id)] = RunnerContext(selection_id)
+            return self._invested[(market_id, selection_id)]
 
     def market_cached(self, market_id: str) -> bool:
         """Checks if market_id is present in any of the strategy's stream caches."""
