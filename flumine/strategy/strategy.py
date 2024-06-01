@@ -115,7 +115,6 @@ class BaseStrategy:
         for i in to_remove:
             del self._invested[i]
 
-
     def validate_order(self, runner_context: RunnerContext, order) -> bool:
         # validate context
         reset_elapsed_seconds = runner_context.reset_elapsed_seconds
@@ -144,9 +143,7 @@ class BaseStrategy:
             return False
         return True
 
-    def get_runner_context(
-        self, market_id: str, selection_id: int
-    ) -> RunnerContext:
+    def get_runner_context(self, market_id: str, selection_id: int) -> RunnerContext:
         return self._invested[(market_id, selection_id)]
 
     def market_cached(self, market_id: str) -> bool:

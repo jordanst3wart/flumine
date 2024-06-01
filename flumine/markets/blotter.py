@@ -220,9 +220,7 @@ class Blotter:
         strategy = order.trade.strategy
         self._trades[order.trade.id].append(order)
         self._strategy_orders[strategy].append(order)
-        self._strategy_selection_orders[
-            (strategy, order.selection_id)
-        ].append(order)
+        self._strategy_selection_orders[(strategy, order.selection_id)].append(order)
         client = order.client
         self._client_orders[client].append(order)
         self._client_strategy_orders[(client, strategy)].append(order)
