@@ -227,9 +227,7 @@ class BaseFlumineTest(unittest.TestCase):
         self.assertFalse(mock_market.update_market_catalogue)
 
     @mock.patch("flumine.baseflumine.process_current_orders")
-    def test__process_current_orders(
-        self, mock_process_current_orders
-    ):
+    def test__process_current_orders(self, mock_process_current_orders):
         mock_order = mock.Mock(complete=True)
         mock_market = mock.Mock(closed=False)
         mock_market.blotter.active = True
