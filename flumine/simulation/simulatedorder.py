@@ -296,11 +296,9 @@ class SimulatedOrder:
             )
 
     def _get_runner(self, market_book: MarketBook) -> RunnerBook:
-        runner_dict = {
-            (runner.selection_id, runner.handicap): runner
-            for runner in market_book.runners
-        }
-        return runner_dict.get((self.order.selection_id, self.order.handicap))
+        for runner in market_book.runners:
+            if runner.selection_id == self.order.selection_id:
+                return runner
 
     def _process_price_matched(
         self, publish_time: int, price: float, size: float, available: list
