@@ -191,9 +191,7 @@ class BaseFlumine:
     def _process_current_orders(self, event: events.CurrentOrdersEvent) -> None:
         # update state
         if event.event:
-            process_current_orders(
-                self.markets, self.strategies, event, self._add_market
-            )
+            process_current_orders(self.markets, event)
         # iterating over all the markets seems a bit dumb...
         # shouldn't it just iterate over the markets that have orders?
         # or just the current orders

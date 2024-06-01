@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+from ..events import events
 from ..markets.markets import Markets
 from ..order.order import BaseOrder, OrderStatus
 from ..order.trade import Trade
@@ -30,11 +31,8 @@ orderStatus: PENDING, EXECUTION_COMPLETE, EXECUTABLE, EXPIRED
 """
 
 
-def process_current_orders(
-    markets: Markets, strategies: Strategies, event, add_market
-) -> None:
+def process_current_orders(markets: Markets, event: events.CurrentOrdersEvent) -> None:
     for current_orders in event.event:
-        client = current_orders.client
         for current_order in current_orders.orders:
             order_id = current_order.customer_order_ref[STRATEGY_NAME_HASH_LENGTH + 1 :]
             order = markets.get_order(

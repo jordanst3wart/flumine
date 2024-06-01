@@ -50,9 +50,7 @@ class BaseOrderTest(unittest.TestCase):
 
         process.process_current_orders(
             markets=markets,
-            strategies=strategies,
             event=event,
-            add_market=mock_add_market,
         )
         mock_process_current_order.assert_called_with(
             betfair_order,
