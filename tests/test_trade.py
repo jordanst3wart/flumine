@@ -16,7 +16,6 @@ class TradeTest(unittest.TestCase):
         self.trade = Trade(
             "1.234",
             567,
-            1.0,
             self.mock_strategy,
             self.notes,
             12,
@@ -26,7 +25,6 @@ class TradeTest(unittest.TestCase):
     def test_init(self):
         self.assertEqual(self.trade.market_id, "1.234")
         self.assertEqual(self.trade.selection_id, 567)
-        self.assertEqual(self.trade.handicap, 1.0)
         self.assertEqual(self.trade.strategy, self.mock_strategy)
         self.assertEqual(self.trade.notes, self.notes)
         self.assertEqual(self.trade.status_log, [])
@@ -55,7 +53,7 @@ class TradeTest(unittest.TestCase):
         self.trade.complete_trade()
         mock__update_status.assert_called_with(TradeStatus.COMPLETE)
         runner_context = self.mock_strategy.get_runner_context(
-            self.trade.market_id, self.trade.selection_id, self.trade.handicap
+            self.trade.market_id, self.trade.selection_id
         )
         runner_context.reset.assert_called_with(self.trade.id)
         self.assertIsNotNone(self.trade.date_time_complete)
@@ -89,7 +87,6 @@ class TradeTest(unittest.TestCase):
             trade=self.trade,
             side="BACK",
             order_type=mock_order_type,
-            handicap=self.trade.handicap,
             sep="-",
             context={1: 2},
             notes=None,
