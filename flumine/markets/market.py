@@ -7,6 +7,7 @@ from betfairlightweight.resources.bettingresources import MarketBook, MarketCata
 from .. import config
 from .blotter import Blotter
 from ..execution.transaction import Transaction
+from ..order.order import BetfairOrder
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class Market:
 
     def place_order(
         self,
-        order,
+        order: BetfairOrder,
         market_version: int = None,
         execute: bool = True,
         force: bool = False,
@@ -89,19 +90,19 @@ class Market:
             return t.place_order(order, market_version, execute, force)
 
     def cancel_order(
-        self, order, size_reduction: float = None, force: bool = False
+        self, order: BetfairOrder, size_reduction: float = None, force: bool = False
     ) -> bool:
         with self.transaction(client=order.client) as t:
             return t.cancel_order(order, size_reduction, force)
 
     def update_order(
-        self, order, new_persistence_type: str, force: bool = False
+        self, order: BetfairOrder, new_persistence_type: str, force: bool = False
     ) -> bool:
         with self.transaction(client=order.client) as t:
             return t.update_order(order, new_persistence_type, force)
 
     def replace_order(
-        self, order, new_price: float, market_version: int = None, force: bool = False
+        self, order: BetfairOrder, new_price: float, market_version: int = None, force: bool = False
     ) -> bool:
         with self.transaction(client=order.client) as t:
             return t.replace_order(order, new_price, market_version, force)

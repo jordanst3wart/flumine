@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 
+from ..order.order import BetfairOrder
 from ..order.orderpackage import OrderPackageType, BetfairOrderPackage
 from ..events import events
 from ..exceptions import ControlError, OrderError
@@ -43,7 +44,7 @@ class Transaction:
 
     def place_order(
         self,
-        order,
+        order: BetfairOrder,
         market_version: int = None,
         execute: bool = True,
         force: bool = False,
@@ -70,7 +71,7 @@ class Transaction:
         return True
 
     def cancel_order(
-        self, order, size_reduction: float = None, force: bool = False
+        self, order: BetfairOrder, size_reduction: float = None, force: bool = False
     ) -> bool:
         if (
             not force
@@ -84,7 +85,7 @@ class Transaction:
         return True
 
     def update_order(
-        self, order, new_persistence_type: str, force: bool = False
+        self, order: BetfairOrder, new_persistence_type: str, force: bool = False
     ) -> bool:
         if (
             not force
@@ -98,14 +99,14 @@ class Transaction:
         return True
 
     def replace_order(
-        self, order, new_price: float, market_version: int = None, force: bool = False
+        self, order: BetfairOrder, new_price: float, market_version: int = None, force: bool = False
     ) -> bool:
         if (
             not force
             and self._validate_controls(order, OrderPackageType.REPLACE) is False
         ):
             return False
-        # replace
+
         order.replace(new_price)
         self._pending_replace.append((order, market_version))
         self._pending_orders = True
@@ -150,7 +151,7 @@ class Transaction:
             self._pending_orders = False
         return len(packages)
 
-    def _validate_controls(self, order, package_type: OrderPackageType) -> bool:
+    def _validate_controls(self, order: BetfairOrder, package_type: OrderPackageType) -> bool:
         # return False on violation
         try:
             len(f"len flumine trading {self.market.flumine.trading_controls}")
@@ -165,7 +166,7 @@ class Transaction:
             return True
 
     def _create_order_package(
-        self, orders: list, package_type: OrderPackageType, async_: bool = False
+        self, orders: list[BetfairOrder], package_type: OrderPackageType, async_: bool = False
     ) -> list:
         # group orders by marketVersion
         orders_grouped = defaultdict(list)
