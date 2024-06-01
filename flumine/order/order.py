@@ -60,7 +60,6 @@ class BaseOrder:
         trade,
         side: str,
         order_type: Union[LimitOrder, LimitOnCloseOrder, MarketOnCloseOrder],
-        handicap: float = 0,
         sep: str = config.order_sep,
         context: dict = None,
         notes: collections.OrderedDict = None,  # order notes (e.g. triggers/market state)
@@ -70,9 +69,7 @@ class BaseOrder:
         self.side = side
         self.order_type = order_type
         self.selection_id = trade.selection_id
-        self.handicap = handicap
-        self.lookup = self.market_id, self.selection_id, self.handicap
-
+        self.lookup = self.market_id, self.selection_id
         self.client = None
         self.runner_status = None  # RunnerBook.status
         self.line_range_result = None
@@ -101,7 +98,7 @@ class BaseOrder:
 
         self.cleared_order = None
 
-        self._sep = config.order_sep
+        self._sep = config.order_sep or "-"
         self.sep = sep
 
     # status
@@ -282,7 +279,6 @@ class BaseOrder:
         return {
             "market_id": self.market_id,
             "selection_id": self.selection_id,
-            "handicap": self.handicap,
             "id": self.id,
             "customer_order_ref": self.customer_order_ref,
             "bet_id": self.bet_id,
@@ -319,9 +315,6 @@ class BaseOrder:
             "market_notes": self.market_notes,
             "client": self.client.username if self.client else None,
         }
-
-    def json(self) -> str:
-        return json.dumps(self.info)
 
     def __repr__(self):
         return "Order {0}: {1}".format(
@@ -394,7 +387,6 @@ class BetfairOrder(BaseOrder):
                 "side": self.side,
                 "orderType": "LIMIT",
                 "limitOrder": self.order_type.place_instruction(),
-                "handicap": self.handicap,
             }
         elif self.order_type.ORDER_TYPE == OrderTypes.LIMIT_ON_CLOSE:
             return {
@@ -403,7 +395,6 @@ class BetfairOrder(BaseOrder):
                 "side": self.side,
                 "orderType": "LIMIT_ON_CLOSE",
                 "limitOnCloseOrder": self.order_type.place_instruction(),
-                "handicap": self.handicap,
             }
         elif self.order_type.ORDER_TYPE == OrderTypes.MARKET_ON_CLOSE:
             return {
@@ -412,7 +403,6 @@ class BetfairOrder(BaseOrder):
                 "side": self.side,
                 "orderType": "MARKET_ON_CLOSE",
                 "marketOnCloseOrder": self.order_type.place_instruction(),
-                "handicap": self.handicap,
             }
 
     def create_cancel_instruction(self) -> dict:

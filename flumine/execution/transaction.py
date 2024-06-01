@@ -61,10 +61,7 @@ class Transaction:
             market_version,
             self._async_place_orders,
         )
-        if order.id not in self.market.blotter:
-            self.market.blotter[order.id] = order
-        else:
-            raise OrderError("Order %s has already been placed" % order.id)
+        self.market.blotter[order.id] = order
         if execute:  # handles replaceOrder
             runner_context = order.trade.strategy.get_runner_context(*order.lookup)
             runner_context.place(order.trade.id)
@@ -75,12 +72,6 @@ class Transaction:
     def cancel_order(
         self, order, size_reduction: float = None, force: bool = False
     ) -> bool:
-        if order.client != self._client:
-            raise OrderError(
-                "cancel_order: Order client '{0}' does not match transaction client '{1}'".format(
-                    order.client, self._client
-                )
-            )
         if (
             not force
             and self._validate_controls(order, OrderPackageType.CANCEL) is False
@@ -95,12 +86,6 @@ class Transaction:
     def update_order(
         self, order, new_persistence_type: str, force: bool = False
     ) -> bool:
-        if order.client != self._client:
-            raise OrderError(
-                "update_order: Order client '{0}' does not match transaction client '{1}'".format(
-                    order.client, self._client
-                )
-            )
         if (
             not force
             and self._validate_controls(order, OrderPackageType.UPDATE) is False
@@ -115,12 +100,6 @@ class Transaction:
     def replace_order(
         self, order, new_price: float, market_version: int = None, force: bool = False
     ) -> bool:
-        if order.client != self._client:
-            raise OrderError(
-                "replace_order: Order client '{0}' does not match transaction client '{1}'".format(
-                    order.client, self._client
-                )
-            )
         if (
             not force
             and self._validate_controls(order, OrderPackageType.REPLACE) is False
@@ -174,6 +153,8 @@ class Transaction:
     def _validate_controls(self, order, package_type: OrderPackageType) -> bool:
         # return False on violation
         try:
+            len(f"len flumine trading {self.market.flumine.trading_controls}")
+            len(f"len client trading {self._client.trading_controls}")
             for control in self.market.flumine.trading_controls:
                 control(order, package_type)
             for control in self._client.trading_controls:

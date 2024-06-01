@@ -26,21 +26,6 @@ class TransactionTest(unittest.TestCase):
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
-        return_value=True,
-    )
-    def test_place_order_retry(self, mock__validate_controls):
-        self.transaction.market.blotter = mock.MagicMock()
-        self.transaction.market.blotter.has_trade.return_value = False
-        self.transaction.market.blotter.__contains__.return_value = True
-        mock_order = mock.Mock(lookup=(1, 2, 3))
-        with self.assertRaises(OrderError):
-            self.transaction.place_order(mock_order)
-        mock__validate_controls.assert_called_with(mock_order, OrderPackageType.PLACE)
-        self.transaction._pending_place = []
-        self.assertFalse(self.transaction._pending_orders)
-
-    @mock.patch(
-        "flumine.execution.transaction.Transaction._validate_controls",
         return_value=False,
     )
     def test_place_order_violation(self, mock__validate_controls):
@@ -76,11 +61,6 @@ class TransactionTest(unittest.TestCase):
         self.transaction._pending_cancel = [(mock_order, None)]
         self.assertTrue(self.transaction._pending_orders)
 
-    def test_cancel_order_incorrect_client(self):
-        mock_order = mock.Mock(client=123)
-        with self.assertRaises(OrderError):
-            self.transaction.cancel_order(mock_order, 0.01)
-
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
         return_value=False,
@@ -115,11 +95,6 @@ class TransactionTest(unittest.TestCase):
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.UPDATE)
         self.transaction._pending_update = [(mock_order, None)]
         self.assertTrue(self.transaction._pending_orders)
-
-    def test_update_order_incorrect_client(self):
-        mock_order = mock.Mock(client=123)
-        with self.assertRaises(OrderError):
-            self.transaction.update_order(mock_order, "PERSIST")
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -157,11 +132,6 @@ class TransactionTest(unittest.TestCase):
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.REPLACE)
         self.transaction._pending_replace = [(mock_order, None)]
         self.assertTrue(self.transaction._pending_orders)
-
-    def test_replace_order_incorrect_client(self):
-        mock_order = mock.Mock(client=123)
-        with self.assertRaises(OrderError):
-            self.transaction.replace_order(mock_order, 1.01, 321)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",

@@ -62,7 +62,7 @@ class Trade:
         self.date_time_complete = datetime.datetime.now(datetime.UTC)
         # reset strategy context
         runner_context = self.strategy.get_runner_context(
-            self.market_id, self.selection_id, self.handicap
+            self.market_id, self.selection_id
         )
         runner_context.reset(self.id)
 
@@ -121,7 +121,6 @@ class Trade:
             trade=self,
             side=order.side,
             order_type=order_type,
-            handicap=order.handicap,
             sep=order.sep,
             context=order.context,
             notes=order.notes,

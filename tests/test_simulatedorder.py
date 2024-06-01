@@ -44,9 +44,7 @@ class SimulatedOrderTest(unittest.TestCase):
         Creates a realistic BefairOrder place instruction and updates the mocks accordingly.
         """
         self.mock_order.side = side
-        return BetfairOrder(
-            mock.Mock(), side, order_type, handicap
-        ).create_place_instruction()
+        return BetfairOrder(mock.Mock(), side, order_type).create_place_instruction()
 
     def mock_betfair_place_instruction_fill_or_kill(
         self,
