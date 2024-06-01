@@ -209,7 +209,6 @@ class BaseFlumine:
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
         logger.info("close market event actually called")
         market_book = event.event
-        recorder = False
         market_id = market_book.market_id
         stream_id = market_book.streaming_unique_id
         market = self.markets.markets.get(market_id)
