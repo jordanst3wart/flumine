@@ -25,6 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
+        pip install -r requirements-speed.txt
 
     - name: Black fmt
       run: |
@@ -38,48 +39,3 @@ jobs:
       run: |
         coverage run -m unittest discover
         coverage report
-
-  test-speed:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11
-
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install -r requirements-speed.txt
-
-    - name: Unittest
-      run: |
-        python -m unittest discover -s tests
-
-  deploy:
-    needs: [test, test-speed]
-    runs-on: ubuntu-latest
-    environment:
-      name: deploy
-    if: github.ref == 'refs/heads/master'
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Build package and docs
-      run: |
-        python -m build
-        twine check dist/*
-        mkdocs build
