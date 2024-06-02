@@ -1,12 +1,8 @@
 import logging
-from typing import Optional
 
 from ..events import events
 from ..markets.markets import Markets
 from ..order.order import BaseOrder, OrderStatus
-from ..order.trade import Trade
-from ..strategy.strategy import Strategies
-from ..events.events import OrderEvent
 from ..utils import STRATEGY_NAME_HASH_LENGTH
 
 logger = logging.getLogger(__name__)
@@ -40,19 +36,6 @@ def process_current_orders(markets: Markets, event: events.CurrentOrdersEvent) -
                 order_id=order_id,
             )
 
-            if (
-                order.bet_id and order.bet_id != current_order.bet_id
-            ):  # replaceOrder handling (hacky)
-                logger.info("hacky replaceOrder handling is being used")
-                order = markets.get_order_from_bet_id(
-                    market_id=current_order.market_id,
-                    bet_id=current_order.bet_id,
-                )
-                if order is None:
-                    continue
-            else:
-                logger.info("hacky replaceOrder handling is not being used")
-            # process order status
             process_current_order(order, current_order)
             # complete order if required
             if order.complete:

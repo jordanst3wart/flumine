@@ -95,10 +95,6 @@ class BaseStrategy:
         # process marketBook; place/cancel/replace orders
         return
 
-    def process_orders(self, market: Market, orders: list) -> None:
-        # process list of Order objects for strategy and Market
-        return
-
     def process_closed_market(self, market: Market, market_book: MarketBook) -> None:
         # process marketBook after closure
         return

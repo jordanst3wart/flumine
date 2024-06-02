@@ -138,9 +138,6 @@ class BaseStrategyTest(unittest.TestCase):
     def test_process_market_book(self):
         self.strategy.process_market_book(None, None)
 
-    def test_process_orders(self):
-        self.strategy.process_orders(None, None)
-
     def test_process_closed_market(self):
         self.strategy.process_closed_market(None, None)
 

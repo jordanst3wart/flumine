@@ -13,7 +13,6 @@ from ..order.order import BaseOrder, OrderStatus
 logger = logging.getLogger(__name__)
 
 # https://www.betfair.com/aboutUs/Betfair.Charges/#charges6
-IMPLIED_COMMISSION_RATE = 0.03
 PENDING_STATUS = [
     OrderStatus.PENDING,
     OrderStatus.VIOLATION,
