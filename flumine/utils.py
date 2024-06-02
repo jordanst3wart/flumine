@@ -1,17 +1,11 @@
-import re
 import logging
 import hashlib
-from typing import Optional, Tuple, Callable, Union
+from typing import Optional, Tuple
 from decimal import Decimal
 
 from betfairlightweight.resources import (
-    MarketBook,
-    MarketCatalogue,
     RunnerBook,
 )
-
-from . import config
-from .exceptions import FlumineException
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +23,6 @@ CUTOFFS = (
 )
 MIN_PRICE = 1.01
 MAX_PRICE = 1000
-MARKET_ID_REGEX = re.compile(r"1.\d{9}")
-EVENT_ID_REGEX = re.compile(r"\d{8}")
 STRATEGY_NAME_HASH_LENGTH = 13
 
 
