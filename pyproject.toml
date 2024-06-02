@@ -4,16 +4,12 @@ version = "4.6.1"
 description = "Flumine is a betting trading framework for Betfair."
 authors = ["Nil <nil@example.com>"]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "flumine"
 description = "Betting trading framework"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 authors = [
     { name = "Liam Pauling", email = "a@unknown.com" },
 ]
@@ -39,10 +35,6 @@ test = [
     "black==24.4.2",
     "coverage",
     "pre-commit",
-    "mkdocs",
-    "mkdocs-material",
-    "build",
-    "twine",
     "pytz",
 ]
 
@@ -53,13 +45,3 @@ Repository = "https://github.com/betcode-org/flumine.git"
 "Bug Tracker" = "https://github.com/betcode-org/flumine/issues"
 Changelog = "https://github.com/betcode-org/flumine/blob/master/HISTORY.rst"
 
-[tool.hatch.version]
-path = "flumine/__version__.py"
-
-[tool.hatch.build.targets.sdist]
-include = [
-    "/flumine",
-    "/HISTORY.rst",
-    "/README.md",
-    "/tests",
-]
