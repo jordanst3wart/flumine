@@ -66,11 +66,12 @@ class BaseFlumine:
         # add execution
         client.add_execution(self)
         # add simulation middleware if required
-        if self.clients.simulated and not any(
-            isinstance(val, SimulatedMiddleware) for val in self._market_middleware
-        ):
-            logger.info("using simulated middleware")
-            self.add_market_middleware(SimulatedMiddleware())
+        # if self.clients.simulated and not any(
+        #    isinstance(val, SimulatedMiddleware) for val in self._market_middleware
+        #):
+        #    logger.info("using simulated middleware")
+        #    self.add_market_middleware(SimulatedMiddleware())
+        logger.info("Not using simulated middleware")
 
     def add_strategy(self, strategy: BaseStrategy) -> None:
         logger.info("Adding strategy %s", strategy)
