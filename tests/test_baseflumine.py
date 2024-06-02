@@ -226,15 +226,10 @@ class BaseFlumineTest(unittest.TestCase):
         self.assertEqual(mock_market.market_catalogue, mock_market_catalogue)
         self.assertFalse(mock_market.update_market_catalogue)
 
-    @mock.patch("flumine.baseflumine.utils.call_process_orders_error_handling")
     @mock.patch("flumine.baseflumine.process_current_orders")
-    def test__process_current_orders(
-        self, mock_process_current_orders, mock_call_process_orders_error_handling
-    ):
+    def test__process_current_orders(self, mock_process_current_orders):
         mock_order = mock.Mock(complete=True)
         mock_market = mock.Mock(closed=False)
-        mock_market.blotter.active = True
-        mock_market.blotter.strategy_orders.return_value = [mock_order]
         self.base_flumine.markets = [mock_market]
         mock_strategy = mock.Mock()
         self.base_flumine.strategies = [mock_strategy]
@@ -243,13 +238,7 @@ class BaseFlumineTest(unittest.TestCase):
         self.base_flumine._process_current_orders(mock_event)
         mock_process_current_orders.assert_called_with(
             self.base_flumine.markets,
-            self.base_flumine.strategies,
             mock_event,
-            self.base_flumine._add_market,
-        )
-        mock_market.blotter.strategy_orders.assert_called_with(mock_strategy)
-        mock_call_process_orders_error_handling.assert_called_with(
-            mock_strategy, mock_market, [mock_order]
         )
 
     @mock.patch("flumine.baseflumine.process_current_orders")

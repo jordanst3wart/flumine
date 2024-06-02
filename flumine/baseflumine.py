@@ -131,20 +131,16 @@ class BaseFlumine:
 
             # process middleware
             for middleware in self._market_middleware:
-                utils.call_middleware_error_handling(middleware, market)
+                middleware(market)
 
             for strategy in self.strategies:
                 if market_book.streaming_unique_id in strategy.stream_ids:
                     if market_is_new:
-                        utils.call_strategy_error_handling(
-                            strategy.process_new_market, market, market_book
-                        )
-                    if utils.call_strategy_error_handling(
-                        strategy.check_market_book, market, market_book
-                    ):
-                        utils.call_strategy_error_handling(
-                            strategy.process_market_book, market, market_book
-                        )
+                        strategy.process_new_market(market, market_book)
+
+                    if strategy.check_market_book(market, market_book):
+                        strategy.process_market_book(market, market_book)
+                        # utils.call_strategy_error_handling(
 
     def process_order_package(self, order_package) -> None:
         """Execute through client."""
@@ -191,20 +187,11 @@ class BaseFlumine:
     def _process_current_orders(self, event: events.CurrentOrdersEvent) -> None:
         # update state
         if event.event:
-            process_current_orders(
-                self.markets, self.strategies, event, self._add_market
-            )
+            process_current_orders(self.markets, event)
+        # this doesn't seen to make sense... why don't they keep the orders with the strategy
+        # rather than keeping the orders with the blotter with the market...?
+        # having a blotter per market seems a bit crazy, there can be 200 markets...
         # iterating over all the markets seems a bit dumb...
-        # shouldn't it just iterate over the markets that have orders?
-        # or just the current orders
-        for market in self.markets:
-            if market.closed is False and market.blotter.active:
-                for strategy in self.strategies:
-                    strategy_orders = market.blotter.strategy_orders(strategy)
-                    if strategy_orders:
-                        utils.call_process_orders_error_handling(
-                            strategy, market, strategy_orders
-                        )
 
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
         logger.info("close market event actually called")

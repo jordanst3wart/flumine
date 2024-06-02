@@ -1,17 +1,11 @@
-import re
 import logging
 import hashlib
-from typing import Optional, Tuple, Callable, Union
+from typing import Optional, Tuple
 from decimal import Decimal
 
 from betfairlightweight.resources import (
-    MarketBook,
-    MarketCatalogue,
     RunnerBook,
 )
-
-from . import config
-from .exceptions import FlumineException
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +23,6 @@ CUTOFFS = (
 )
 MIN_PRICE = 1.01
 MAX_PRICE = 1000
-MARKET_ID_REGEX = re.compile(r"1.\d{9}")
-EVENT_ID_REGEX = re.compile(r"\d{8}")
 STRATEGY_NAME_HASH_LENGTH = 13
 
 
@@ -167,77 +159,3 @@ def wap(matched: list) -> Tuple[float, float]:
         return 0, 0
     else:
         return round(b, 2), round(a / b, 2)
-
-
-def call_strategy_error_handling(
-    func: Callable,
-    market,
-    update: Union[MarketBook, MarketCatalogue],
-) -> Optional[bool]:
-    try:
-        return func(market, update)
-    except FlumineException as e:
-        logger.error(
-            "FlumineException %s in %s (%s)",
-            e,
-            func.__name__,
-            market.market_id,
-            exc_info=True,
-        )
-    except Exception as e:
-        logger.critical(
-            "Unknown error %s in %s (%s)",
-            e,
-            func.__name__,
-            market.market_id,
-            exc_info=True,
-        )
-        if config.raise_errors:
-            raise
-    return False
-
-
-def call_middleware_error_handling(middleware, market) -> None:
-    try:
-        middleware(market)
-    except FlumineException as e:
-        logger.error(
-            "FlumineException %s in %s (%s)",
-            e,
-            middleware,
-            market.market_id,
-            exc_info=True,
-        )
-    except Exception as e:
-        logger.critical(
-            "Unknown error %s in %s (%s)",
-            e,
-            middleware,
-            market.market_id,
-            exc_info=True,
-        )
-        if config.raise_errors:
-            raise
-
-
-def call_process_orders_error_handling(strategy, market, strategy_orders: list) -> None:
-    try:
-        strategy.process_orders(market, strategy_orders)
-    except FlumineException as e:
-        logger.error(
-            "FlumineException %s in %s (%s)",
-            e,
-            strategy,
-            market.market_id,
-            exc_info=True,
-        )
-    except Exception as e:
-        logger.critical(
-            "Unknown error %s in %s (%s)",
-            e,
-            strategy,
-            market.market_id,
-            exc_info=True,
-        )
-        if config.raise_errors:
-            raise

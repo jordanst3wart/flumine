@@ -95,10 +95,6 @@ class BaseStrategy:
         # process marketBook; place/cancel/replace orders
         return
 
-    def process_orders(self, market: Market, orders: list) -> None:
-        # process list of Order objects for strategy and Market
-        return
-
     def process_closed_market(self, market: Market, market_book: MarketBook) -> None:
         # process marketBook after closure
         return
@@ -149,18 +145,6 @@ class BaseStrategy:
         except KeyError:
             self._invested[(market_id, selection_id)] = RunnerContext(selection_id)
             return self._invested[(market_id, selection_id)]
-
-    def market_cached(self, market_id: str) -> bool:
-        """Checks if market_id is present in any of the strategy's stream caches."""
-        # This is a slower but more comprehensive test to find out whether a market is
-        # associated with a strategy than checking "if streaming_unique_id in self.stream_ids".
-        for stream in self.streams:
-            try:
-                if market_id in stream._listener.stream._caches:
-                    return True
-            except AttributeError:
-                continue
-        return False
 
     @property
     def stream_ids(self) -> Union[list, set]:
