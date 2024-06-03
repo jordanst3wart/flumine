@@ -29,7 +29,7 @@ class BaseClient:
         self.interactive_login = interactive_login
         self.order_stream = order_stream
         self.paper_trade = paper_trade  # simulated order placement using live data
-        self.simulated_full_match = (  # TODO maybe remove
+        self.simulated_full_match = (  # TODO maybe remove maybe
             simulated_full_match  # simulated 100% match on successful place
         )
 
@@ -37,7 +37,7 @@ class BaseClient:
         self.account_funds = None
         self.commission_paid = 0
 
-        self._execution_cls = execution_cls
+        self._execution_cls = execution_cls  # TODO remove
         self.execution = None  # set during flumine init
         self.trading_controls = []
 
