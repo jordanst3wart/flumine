@@ -1,11 +1,9 @@
 import logging
-import time
 import requests
 from typing import Optional
 
 from .baseexecution import BaseExecution
-from .. import config
-from ..clients.clients import ExchangeType
+from ..clients.exchangetype import ExchangeType
 from ..order.orderpackage import BaseOrderPackage, OrderPackageType
 
 logger = logging.getLogger(__name__)

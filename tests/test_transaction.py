@@ -39,8 +39,7 @@ class TransactionTest(unittest.TestCase):
         "flumine.execution.transaction.Transaction._validate_controls",
         return_value=False,
     )
-    @mock.patch("flumine.execution.transaction.events")
-    def test_force_place_order(self, mock_events, mock__validate_controls):
+    def test_force_place_order(self, mock__validate_controls):
         self.transaction.market.blotter = mock.MagicMock()
         self.transaction.market.blotter.has_trade.return_value = False
         mock_order = mock.Mock(id="123", lookup=(1, 2, 3))

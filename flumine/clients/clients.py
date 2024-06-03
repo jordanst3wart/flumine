@@ -1,14 +1,9 @@
 import logging
-from enum import Enum
 
+from .exchangetype import ExchangeType
 from ..exceptions import ClientError
 
 logger = logging.getLogger(__name__)
-
-
-class ExchangeType(Enum):
-    BETFAIR = "Betfair"
-    SIMULATED = "Simulated"
 
 
 class Clients:

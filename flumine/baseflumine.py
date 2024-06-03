@@ -5,17 +5,16 @@ import threading
 from typing import Type
 from betfairlightweight import resources
 
+from .clients.baseclient import BaseClient
+from .clients.clients import Clients
 from .controls.basecontrol import BaseControl
 from .strategy.strategy import Strategies, BaseStrategy
 from .streams.streams import Streams
 from .events import events
 from .worker import BackgroundWorker
-from .clients import Clients, BaseClient
+
 from .markets.markets import Markets
 from .markets.market import Market
-from .markets.middleware import Middleware, SimulatedMiddleware
-from .execution.betfairexecution import BetfairExecution
-from .execution.simulatedexecution import SimulatedExecution
 from .order.process import process_current_orders
 from .controls.tradingcontrols import (
     StrategyExposure,
@@ -42,12 +41,7 @@ class BaseFlumine:
         self.clients = Clients()
         self.handler_queue = queue.Queue()
         self.markets = Markets()
-        self._market_middleware = []
         self.strategies = Strategies()
-
-        # order execution class
-        self.simulated_execution = SimulatedExecution(self)
-        self.betfair_execution = BetfairExecution(self)
 
         if client:
             self.add_client(client)
@@ -64,14 +58,7 @@ class BaseFlumine:
         self.clients.add_client(client)
         self.streams.add_client(client)
         # add execution
-        client.add_execution(self)
-        # add simulation middleware if required
-        # if self.clients.simulated and not any(
-        #    isinstance(val, SimulatedMiddleware) for val in self._market_middleware
-        #):
-        #    logger.info("using simulated middleware")
-        #    self.add_market_middleware(SimulatedMiddleware())
-        logger.info("Not using simulated middleware")
+        client.add_execution()  # TODO fix this function
 
     def add_strategy(self, strategy: BaseStrategy) -> None:
         logger.info("Adding strategy %s", strategy)
@@ -82,19 +69,9 @@ class BaseFlumine:
         logger.info("Adding worker %s", worker.name)
         self._workers.append(worker)
 
-    def add_client_control(
-        self, client: BaseClient, client_control: Type[BaseControl], **kwargs
-    ) -> None:
-        logger.info("Adding client control %s", client_control.NAME)
-        client.trading_controls.append(client_control(self, client, **kwargs))
-
     def add_trading_control(self, trading_control: Type[BaseControl], **kwargs) -> None:
         logger.info("Adding trading control %s", trading_control.NAME)
         self.trading_controls.append(trading_control(self, **kwargs))
-
-    def add_market_middleware(self, middleware: Middleware) -> None:
-        logger.info("Adding market middleware %s", middleware)
-        self._market_middleware.append(middleware)
 
     def _add_default_workers(self) -> None:
         return
@@ -130,10 +107,6 @@ class BaseFlumine:
             # process market
             market(market_book)
 
-            # process middleware
-            for middleware in self._market_middleware:
-                middleware(market)
-
             for strategy in self.strategies:
                 if market_book.streaming_unique_id in strategy.stream_ids:
                     if market_is_new:
@@ -151,14 +124,10 @@ class BaseFlumine:
         logger.debug("Adding: %s to markets", market_id)
         market = Market(self, market_id, market_book)
         self.markets.add_market(market_id, market)
-        for middleware in self._market_middleware:
-            middleware.add_market(market)
         return market
 
     def _remove_market(self, market: Market, clear: bool = True) -> None:
         logger.debug("Removing market %s", market.market_id, extra=self.info)
-        for middleware in self._market_middleware:
-            middleware.remove_market(market)
         for strategy in self.strategies:
             strategy.remove_market(market.market_id)
         if clear:

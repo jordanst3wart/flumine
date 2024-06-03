@@ -3,7 +3,7 @@ import datetime
 from typing import List, Optional
 from betfairlightweight.resources.bettingresources import MarketBook, RunnerBook
 
-from .utils import (
+from .simulatedresponse import (
     SimulatedPlaceResponse,
     SimulatedCancelResponse,
     SimulatedUpdateResponse,

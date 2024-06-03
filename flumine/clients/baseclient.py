@@ -1,6 +1,8 @@
 from typing import Optional
 
-from .clients import ExchangeType
+from .exchangetype import ExchangeType
+from ..execution.betfairexecution import BetfairExecution
+from ..execution.simulatedexecution import SimulatedExecution
 
 
 class BaseClient:
@@ -18,7 +20,6 @@ class BaseClient:
         order_stream: bool = True,
         paper_trade: bool = False,
         simulated_full_match: bool = False,  # TODO trial adding
-        execution_cls=None,
     ):
         if hasattr(betting_client, "lightweight"):
             assert (
@@ -29,15 +30,13 @@ class BaseClient:
         self.interactive_login = interactive_login
         self.order_stream = order_stream
         self.paper_trade = paper_trade  # simulated order placement using live data
-        self.simulated_full_match = (  # TODO maybe remove
+        self.simulated_full_match = (  # TODO maybe remove maybe
             simulated_full_match  # simulated 100% match on successful place
         )
 
         self.account_details = None
         self.account_funds = None
         self.commission_paid = 0
-
-        self._execution_cls = execution_cls
         self.execution = None  # set during flumine init
         self.trading_controls = []
 
@@ -53,14 +52,11 @@ class BaseClient:
     def update_account_details(self) -> None:
         raise NotImplementedError
 
-    def add_execution(self, flumine) -> None:
-        if self._execution_cls:
-            self.execution = self._execution_cls(flumine)
-        else:
-            if self.EXCHANGE == ExchangeType.SIMULATED or self.paper_trade:
-                self.execution = flumine.simulated_execution
-            elif self.EXCHANGE == ExchangeType.BETFAIR:
-                self.execution = flumine.betfair_execution
+    def add_execution(self) -> None:
+        if self.EXCHANGE == ExchangeType.SIMULATED or self.paper_trade:
+            self.execution = SimulatedExecution(self)
+        elif self.EXCHANGE == ExchangeType.BETFAIR:
+            self.execution = BetfairExecution(self)
 
     @property
     def username(self) -> str:

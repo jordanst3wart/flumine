@@ -2,12 +2,13 @@ import time
 import logging
 from typing import Optional, Union, Iterator
 
+from ..clients.baseclient import BaseClient
+from ..clients.exchangetype import ExchangeType
 from ..strategy.strategy import BaseStrategy
 from .marketstream import MarketStream
 from .datastream import DataStream
 from .orderstream import OrderStream
 from .simulatedorderstream import SimulatedOrderStream
-from ..clients import ExchangeType, BaseClient
 
 logger = logging.getLogger(__name__)
 
