@@ -4,7 +4,7 @@ from typing import Callable
 from betfairlightweight import BetfairError
 
 from .baseexecution import BaseExecution
-from ..clients.clients import ExchangeType
+from ..clients.exchangetype import ExchangeType
 from ..order.orderpackage import BaseOrderPackage, OrderPackageType
 from ..exceptions import OrderExecutionError
 

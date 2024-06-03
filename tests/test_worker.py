@@ -4,7 +4,7 @@ from unittest import mock
 from betfairlightweight import BetfairError, exceptions
 
 from flumine import worker
-from flumine.clients import ExchangeType
+from flumine.clients.exchangetype import ExchangeType
 
 
 class BackgroundWorkerTest(unittest.TestCase):

@@ -3,10 +3,10 @@ from unittest import mock
 
 from flumine.baseflumine import (
     BaseFlumine,
-    SimulatedMiddleware,
     Market,
 )
-from flumine.clients import ExchangeType
+from flumine.clients.exchangetype import ExchangeType
+
 from flumine.exceptions import ClientError
 
 
@@ -15,30 +15,11 @@ class BaseFlumineTest(unittest.TestCase):
         self.mock_client = mock.Mock(EXCHANGE=ExchangeType.BETFAIR, paper_trade=False)
         self.base_flumine = BaseFlumine(self.mock_client)
 
-    @mock.patch("flumine.baseflumine.SimulatedMiddleware")
-    @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
-    def test_init_simulated(self, mock_add_market_middleware, mock_SimulatedMiddleware):
-        BaseFlumine.SIMULATED = True
-        mock_client = mock.Mock(EXCHANGE=ExchangeType.SIMULATED, paper_trade=False)
-        BaseFlumine(mock_client)
-        mock_add_market_middleware.assert_called_with(mock_SimulatedMiddleware())
-        BaseFlumine.SIMULATED = False
-
-    @mock.patch("flumine.baseflumine.SimulatedMiddleware")
-    @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
-    def test_init_paper_trade(
-        self, mock_add_market_middleware, mock_SimulatedMiddleware
-    ):
-        mock_client = mock.Mock(EXCHANGE=ExchangeType.BETFAIR, paper_trade=True)
-        BaseFlumine(mock_client)
-        mock_add_market_middleware.assert_called_with(mock_SimulatedMiddleware())
-
     def test_run(self):
         with self.assertRaises(NotImplementedError):
             self.base_flumine.run()
 
-    @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
-    def test_add_client(self, mock_add_market_middleware):
+    def test_add_client(self):
         mock_clients = mock.Mock()
         self.base_flumine.clients = mock_clients
         mock_streams = mock.Mock()
@@ -47,41 +28,11 @@ class BaseFlumineTest(unittest.TestCase):
         self.base_flumine.add_client(mock_client)
         mock_clients.add_client.assert_called_with(mock_client)
         mock_streams.add_client.assert_called_with(mock_client)
-        mock_client.add_execution.assert_called_with(self.base_flumine)
-        mock_add_market_middleware.assert_called()
-
-    @mock.patch("flumine.baseflumine.BaseFlumine.add_market_middleware")
-    def test_add_client_with_middleware(self, mock_add_market_middleware):
-        self.base_flumine._market_middleware.append(SimulatedMiddleware())
-        mock_clients = mock.Mock()
-        self.base_flumine.clients = mock_clients
-        mock_streams = mock.Mock()
-        self.base_flumine.streams = mock_streams
-        mock_client = mock.Mock()
-        self.base_flumine.add_client(mock_client)
-        mock_clients.add_client.assert_called_with(mock_client)
-        mock_streams.add_client.assert_called_with(mock_client)
-        mock_client.add_execution.assert_called_with(self.base_flumine)
-        mock_add_market_middleware.assert_not_called()
 
     def test_add_worker(self):
         mock_worker = mock.Mock()
         self.base_flumine.add_worker(mock_worker)
         self.assertEqual(len(self.base_flumine._workers), 1)
-
-    def test_add_client_control(self):
-        self.mock_client.trading_controls = []
-        mock_control = mock.Mock()
-        self.base_flumine.add_client_control(self.mock_client, mock_control)
-        self.assertEqual(
-            self.mock_client.trading_controls,
-            [mock_control(self.base_flumine, self.mock_client)],
-        )
-
-    def test_add_market_middleware(self):
-        mock_middleware = mock.Mock()
-        self.base_flumine.add_market_middleware(mock_middleware)
-        self.assertEqual(len(self.base_flumine._market_middleware), 1)
 
     def test__add_default_workers(self):
         self.base_flumine._add_default_workers()
@@ -159,14 +110,11 @@ class BaseFlumineTest(unittest.TestCase):
 
     @mock.patch("flumine.baseflumine.Market")
     def test__add_market(self, mock_market):
-        mock_middleware = mock.Mock()
-        self.base_flumine._market_middleware = [mock_middleware]
         mock_market_book = mock.Mock()
         self.assertEqual(
             self.base_flumine._add_market("1.234", mock_market_book), mock_market()
         )
         self.assertEqual(len(self.base_flumine.markets._markets), 1)
-        mock_middleware.add_market.assert_called_with(mock_market())
 
     @mock.patch("flumine.baseflumine.BaseFlumine.info")
     def test__remove_market(self, _):
@@ -174,12 +122,9 @@ class BaseFlumineTest(unittest.TestCase):
         self.base_flumine.strategies = [mock_strategy]
         mock_markets = mock.Mock()
         self.base_flumine.markets = mock_markets
-        mock_middleware = mock.Mock()
-        self.base_flumine._market_middleware = [mock_middleware]
         mock_market = mock.Mock()
         self.base_flumine._remove_market(mock_market)
         mock_markets.remove_market.assert_called_with(mock_market.market_id)
-        mock_middleware.remove_market.assert_called_with(mock_market)
         mock_strategy.remove_market.assert_called_with(mock_market.market_id)
 
     @mock.patch("flumine.baseflumine.BaseFlumine.info")
@@ -188,12 +133,9 @@ class BaseFlumineTest(unittest.TestCase):
         self.base_flumine.strategies = [mock_strategy]
         mock_markets = mock.Mock()
         self.base_flumine.markets = mock_markets
-        mock_middleware = mock.Mock()
-        self.base_flumine._market_middleware = [mock_middleware]
         mock_market = mock.Mock()
         self.base_flumine._remove_market(mock_market, clear=False)
         mock_markets.remove_market.assert_not_called()
-        mock_middleware.remove_market.assert_called_with(mock_market)
         mock_strategy.remove_market.assert_called_with(mock_market.market_id)
 
     @mock.patch("flumine.baseflumine.events")

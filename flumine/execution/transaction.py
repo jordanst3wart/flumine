@@ -3,8 +3,7 @@ from collections import defaultdict
 
 from ..order.order import BetfairOrder
 from ..order.orderpackage import OrderPackageType, BetfairOrderPackage
-from ..events import events
-from ..exceptions import ControlError, OrderError
+from ..exceptions import ControlError
 from ..utils import chunks
 
 logger = logging.getLogger(__name__)

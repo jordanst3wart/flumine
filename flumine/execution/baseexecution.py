@@ -5,7 +5,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 from .. import config
 from ..order.orderpackage import BaseOrderPackage, OrderPackageType, BaseOrder
-from ..events.events import OrderEvent
 
 logger = logging.getLogger(__name__)
 

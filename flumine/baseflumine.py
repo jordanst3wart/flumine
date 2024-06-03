@@ -5,16 +5,16 @@ import threading
 from typing import Type
 from betfairlightweight import resources
 
+from .clients.baseclient import BaseClient
+from .clients.clients import Clients
 from .controls.basecontrol import BaseControl
 from .strategy.strategy import Strategies, BaseStrategy
 from .streams.streams import Streams
 from .events import events
 from .worker import BackgroundWorker
-from .clients import Clients, BaseClient
+
 from .markets.markets import Markets
 from .markets.market import Market
-from .execution.betfairexecution import BetfairExecution
-from .execution.simulatedexecution import SimulatedExecution
 from .order.process import process_current_orders
 from .controls.tradingcontrols import (
     StrategyExposure,
@@ -43,10 +43,6 @@ class BaseFlumine:
         self.markets = Markets()
         self.strategies = Strategies()
 
-        # order execution class
-        self.simulated_execution = SimulatedExecution(self)
-        self.betfair_execution = BetfairExecution(self)
-
         if client:
             self.add_client(client)
 
@@ -62,7 +58,7 @@ class BaseFlumine:
         self.clients.add_client(client)
         self.streams.add_client(client)
         # add execution
-        client.add_execution(self)  # TODO fix this function
+        client.add_execution()  # TODO fix this function
 
     def add_strategy(self, strategy: BaseStrategy) -> None:
         logger.info("Adding strategy %s", strategy)

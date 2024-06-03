@@ -1,9 +1,8 @@
 import unittest
 from unittest import mock
 
-from flumine import Flumine, worker
-from flumine.events import events
-from flumine.clients import ExchangeType
+from flumine import Flumine
+from flumine.clients.exchangetype import ExchangeType
 
 
 class FlumineTest(unittest.TestCase):

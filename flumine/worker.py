@@ -5,9 +5,9 @@ from typing import Callable, Optional
 from betfairlightweight import BetfairError, filters, exceptions
 
 from . import config
+from .clients.exchangetype import ExchangeType
 from .events import events
 from .utils import chunks
-from .clients import ExchangeType
 
 logger = logging.getLogger(__name__)
 

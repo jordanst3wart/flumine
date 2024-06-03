@@ -1,11 +1,10 @@
 import unittest
 from unittest import mock
-from betfairlightweight.metadata import currency_parameters
 from betfairlightweight.exceptions import BetfairError
 
+from flumine.clients.baseclient import BaseClient
+from flumine.clients.betfairclient import BetfairClient
 from flumine.clients.clients import ExchangeType, Clients
-from flumine.clients import BaseClient, BetfairClient
-from flumine.clients import betfairclient
 from flumine import exceptions
 
 
@@ -148,31 +147,6 @@ class BaseClientTest(unittest.TestCase):
     def test_update_account_details(self):
         with self.assertRaises(NotImplementedError):
             assert self.base_client.update_account_details()
-
-    def test_add_execution(self):
-        mock_flumine = mock.Mock()
-        self.base_client.EXCHANGE = ExchangeType.SIMULATED
-        self.base_client.add_execution(mock_flumine)
-        self.assertEqual(self.base_client.execution, mock_flumine.simulated_execution)
-        self.base_client.EXCHANGE = ExchangeType.BETFAIR
-        self.base_client.add_execution(mock_flumine)
-        self.assertEqual(self.base_client.execution, mock_flumine.betfair_execution)
-
-    def test_add_execution_cls(self):
-        mock_flumine = mock.Mock()
-        self.base_client.EXCHANGE = ExchangeType.SIMULATED
-        mock_execution_cls = mock.Mock()
-        self.base_client._execution_cls = mock_execution_cls
-        self.base_client.add_execution(mock_flumine)
-        self.assertEqual(self.base_client.execution, mock_execution_cls.return_value)
-        mock_execution_cls.assert_called_with(mock_flumine)
-
-    def test_add_execution_paper(self):
-        self.base_client.paper_trade = True
-        self.base_client.EXCHANGE = ExchangeType.BETFAIR
-        mock_flumine = mock.Mock()
-        self.base_client.add_execution(mock_flumine)
-        self.assertEqual(self.base_client.execution, mock_flumine.simulated_execution)
 
     def test_min_bet_payout(self):
         with self.assertRaises(NotImplementedError):

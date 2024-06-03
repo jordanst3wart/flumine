@@ -4,7 +4,7 @@ from betfairlightweight import BetfairError, resources
 from betfairlightweight.metadata import currency_parameters
 
 from .baseclient import BaseClient
-from .clients import ExchangeType
+from .exchangetype import ExchangeType
 
 logger = logging.getLogger(__name__)
 

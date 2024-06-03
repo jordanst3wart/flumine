@@ -89,28 +89,6 @@ class BaseExecutionTest(unittest.TestCase):
         )
         mock__get_http_session.assert_called_with()
 
-    def test_handler_unknown(self):
-        mock_order_package = mock.Mock()
-        mock_order_package.package_type = "DELETE"
-        with self.assertRaises(NotImplementedError):
-            self.execution.handler(mock_order_package)
-
-    def test_execute_place(self):
-        with self.assertRaises(NotImplementedError):
-            self.execution.execute_place(None, None)
-
-    def test_execute_cancel(self):
-        with self.assertRaises(NotImplementedError):
-            self.execution.execute_place(None, None)
-
-    def test_execute_update(self):
-        with self.assertRaises(NotImplementedError):
-            self.execution.execute_place(None, None)
-
-    def test_execute_replace(self):
-        with self.assertRaises(NotImplementedError):
-            self.execution.execute_place(None, None)
-
     @mock.patch("flumine.execution.baseexecution.BaseExecution._create_new_session")
     def test__get_http_session(self, mock__create_new_session):
         mock_session_one = mock.Mock(time_returned=time.time())
@@ -153,8 +131,7 @@ class BaseExecutionTest(unittest.TestCase):
         mock_session = mock.Mock()
         self.execution._return_http_session(mock_session, err=True)
 
-    @mock.patch("flumine.execution.baseexecution.OrderEvent")
-    def test__order_logger_place(self, mock_order_event):
+    def test__order_logger_place(self):
         mock_order = mock.Mock(async_=False)
         mock_instruction_report = mock.Mock()
         self.execution._order_logger(
@@ -163,8 +140,7 @@ class BaseExecutionTest(unittest.TestCase):
         self.assertEqual(mock_order.bet_id, mock_instruction_report.bet_id)
         mock_order.responses.placed.assert_called_with(mock_instruction_report, dt=True)
 
-    @mock.patch("flumine.execution.baseexecution.OrderEvent")
-    def test__order_logger_place_async(self, mock_order_event):
+    def test__order_logger_place_async(self):
         mock_order = mock.Mock(async_=True, simulated=False)
         mock_instruction_report = mock.Mock()
         self.execution._order_logger(
@@ -175,8 +151,7 @@ class BaseExecutionTest(unittest.TestCase):
             mock_instruction_report, dt=False
         )
 
-    @mock.patch("flumine.execution.baseexecution.OrderEvent")
-    def test__order_logger_place_async_simulated(self, mock_order_event):
+    def test__order_logger_place_async_simulated(self):
         mock_order = mock.Mock(async_=True, simulated=True)
         mock_instruction_report = mock.Mock()
         self.execution._order_logger(
@@ -210,8 +185,7 @@ class BaseExecutionTest(unittest.TestCase):
         )
         mock_order.responses.updated.assert_called_with(mock_instruction_report)
 
-    @mock.patch("flumine.execution.baseexecution.OrderEvent")
-    def test__order_logger_replace(self, mock_order_event):
+    def test__order_logger_replace(self):
         mock_order = mock.Mock()
         mock_instruction_report = mock.Mock()
         self.execution._order_logger(
