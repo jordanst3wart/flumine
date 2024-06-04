@@ -156,22 +156,6 @@ class BaseOrderTest(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.order.replace(20.0)
 
-    def test_create_place_instruction(self):
-        with self.assertRaises(NotImplementedError):
-            self.order.create_place_instruction()
-
-    def test_create_cancel_instruction(self):
-        with self.assertRaises(NotImplementedError):
-            self.order.create_cancel_instruction()
-
-    def test_create_update_instruction(self):
-        with self.assertRaises(NotImplementedError):
-            self.order.create_update_instruction()
-
-    def test_create_replace_instruction(self):
-        with self.assertRaises(NotImplementedError):
-            self.order.create_replace_instruction()
-
     def test_update_current_order(self):
         mock_current_order = mock.Mock()
         self.order.update_current_order(mock_current_order)
@@ -436,61 +420,6 @@ class BetfairOrderTest(unittest.TestCase):
         self.order.status = OrderStatus.PENDING
         with self.assertRaises(OrderUpdateError):
             self.order.replace(1.52)
-
-    def test_create_place_instruction(self):
-        self.mock_order_type.ORDER_TYPE = OrderTypes.LIMIT
-        self.assertEqual(
-            self.order.create_place_instruction(),
-            {
-                "customerOrderRef": self.order.customer_order_ref,
-                "limitOrder": self.mock_order_type.place_instruction(),
-                "orderType": "LIMIT",
-                "selectionId": self.mock_trade.selection_id,
-                "side": "BACK",
-            },
-        )
-        self.mock_order_type.ORDER_TYPE = OrderTypes.LIMIT_ON_CLOSE
-        self.assertEqual(
-            self.order.create_place_instruction(),
-            {
-                "customerOrderRef": self.order.customer_order_ref,
-                "limitOnCloseOrder": self.mock_order_type.place_instruction(),
-                "orderType": "LIMIT_ON_CLOSE",
-                "selectionId": self.mock_trade.selection_id,
-                "side": "BACK",
-            },
-        )
-        self.mock_order_type.ORDER_TYPE = OrderTypes.MARKET_ON_CLOSE
-        self.assertEqual(
-            self.order.create_place_instruction(),
-            {
-                "customerOrderRef": self.order.customer_order_ref,
-                "marketOnCloseOrder": self.mock_order_type.place_instruction(),
-                "orderType": "MARKET_ON_CLOSE",
-                "selectionId": self.mock_trade.selection_id,
-                "side": "BACK",
-            },
-        )
-
-    def test_create_cancel_instruction(self):
-        self.order.update_data = {"size_reduction": 0.02}
-        self.assertEqual(
-            self.order.create_cancel_instruction(),
-            {"betId": None, "sizeReduction": 0.02},
-        )
-
-    def test_create_update_instruction(self):
-        self.mock_order_type.persistence_type = "PERSIST"
-        self.assertEqual(
-            self.order.create_update_instruction(),
-            {"betId": None, "newPersistenceType": "PERSIST"},
-        )
-
-    def test_create_replace_instruction(self):
-        self.order.update_data = {"new_price": 2.02}
-        self.assertEqual(
-            self.order.create_replace_instruction(), {"betId": None, "newPrice": 2.02}
-        )
 
     def test_average_price_matched(self):
         self.assertEqual(self.order.average_price_matched, 0)

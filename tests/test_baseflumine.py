@@ -101,13 +101,6 @@ class BaseFlumineTest(unittest.TestCase):
                 mock_strategy.process_market_book.call_count, process_call_count
             )
 
-    def test_process_order_package(self):
-        mock_order_package = mock.Mock()
-        self.base_flumine.process_order_package(mock_order_package)
-        mock_order_package.client.execution.handler.assert_called_with(
-            mock_order_package
-        )
-
     @mock.patch("flumine.baseflumine.Market")
     def test__add_market(self, mock_market):
         mock_market_book = mock.Mock()
@@ -318,11 +311,7 @@ class BaseFlumineTest(unittest.TestCase):
                 pass
 
     @mock.patch("flumine.baseflumine.BaseFlumine._process_end_flumine")
-    @mock.patch("flumine.baseflumine.events")
-    def test_enter_exit(self, mock_events, mock__process_end_flumine):
-        control = mock.Mock()
-        self.base_flumine.simulated_execution = mock.Mock()
-        self.base_flumine.betfair_execution = mock.Mock()
+    def test_enter_exit(self, mock__process_end_flumine):
         with self.base_flumine:
             self.assertTrue(self.base_flumine._running)
             self.mock_client.login.assert_called_with()
@@ -330,6 +319,3 @@ class BaseFlumineTest(unittest.TestCase):
         self.assertFalse(self.base_flumine._running)
         mock__process_end_flumine.assert_called_with()
         self.mock_client.logout.assert_called_with()
-        self.base_flumine.simulated_execution.shutdown.assert_called_with()
-        self.base_flumine.betfair_execution.shutdown.assert_called_with()
-        # control.start.assert_called_with()

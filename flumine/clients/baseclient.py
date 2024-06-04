@@ -1,9 +1,5 @@
 from typing import Optional
 
-from .exchangetype import ExchangeType
-from ..execution.betfairexecution import BetfairExecution
-from ..execution.simulatedexecution import SimulatedExecution
-
 
 class BaseClient:
     """
@@ -37,7 +33,6 @@ class BaseClient:
         self.account_details = None
         self.account_funds = None
         self.commission_paid = 0
-        self.execution = None  # set during flumine init
         self.trading_controls = []
 
     def login(self) -> None:
@@ -51,12 +46,6 @@ class BaseClient:
 
     def update_account_details(self) -> None:
         raise NotImplementedError
-
-    def add_execution(self) -> None:
-        if self.EXCHANGE == ExchangeType.SIMULATED or self.paper_trade:
-            self.execution = SimulatedExecution(self)
-        elif self.EXCHANGE == ExchangeType.BETFAIR:
-            self.execution = BetfairExecution(self)
 
     @property
     def username(self) -> str:
