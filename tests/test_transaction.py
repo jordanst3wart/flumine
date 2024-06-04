@@ -18,7 +18,6 @@ class TransactionTest(unittest.TestCase):
         self.assertEqual(self.transaction._client, self.mock_client)
         self.assertEqual(self.transaction._id, 1)
         self.assertFalse(self.transaction._async_place_orders)
-        self.assertFalse(self.transaction._pending_orders)
         self.assertEqual(self.transaction._pending_place, [])
         self.assertEqual(self.transaction._pending_cancel, [])
         self.assertEqual(self.transaction._pending_update, [])
@@ -33,7 +32,6 @@ class TransactionTest(unittest.TestCase):
         self.assertFalse(self.transaction.place_order(mock_order))
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.PLACE)
         self.transaction._pending_place = []
-        self.assertFalse(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -46,7 +44,6 @@ class TransactionTest(unittest.TestCase):
         self.assertTrue(self.transaction.place_order(mock_order, force=True))
         mock__validate_controls.assert_not_called()
         self.transaction._pending_place = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -58,7 +55,6 @@ class TransactionTest(unittest.TestCase):
         mock_order.cancel.assert_called_with(0.01)
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.CANCEL)
         self.transaction._pending_cancel = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -69,7 +65,6 @@ class TransactionTest(unittest.TestCase):
         self.assertFalse(self.transaction.cancel_order(mock_order))
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.CANCEL)
         self.transaction._pending_cancel = []
-        self.assertFalse(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -81,7 +76,6 @@ class TransactionTest(unittest.TestCase):
         mock_order.cancel.assert_called_with(0.01)
         mock__validate_controls.assert_not_called()
         self.transaction._pending_cancel = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -93,7 +87,6 @@ class TransactionTest(unittest.TestCase):
         mock_order.update.assert_called_with("PERSIST")
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.UPDATE)
         self.transaction._pending_update = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -104,7 +97,6 @@ class TransactionTest(unittest.TestCase):
         self.assertFalse(self.transaction.update_order(mock_order, "test"))
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.UPDATE)
         self.transaction._pending_update = []
-        self.assertFalse(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -118,7 +110,6 @@ class TransactionTest(unittest.TestCase):
         mock_order.update.assert_called_with("PERSIST")
         mock__validate_controls.assert_not_called()
         self.transaction._pending_update = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -130,7 +121,6 @@ class TransactionTest(unittest.TestCase):
         mock_order.replace.assert_called_with(1.01)
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.REPLACE)
         self.transaction._pending_replace = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -141,7 +131,6 @@ class TransactionTest(unittest.TestCase):
         self.assertFalse(self.transaction.replace_order(mock_order, 2.02))
         mock__validate_controls.assert_called_with(mock_order, OrderPackageType.REPLACE)
         self.transaction._pending_replace = []
-        self.assertFalse(self.transaction._pending_orders)
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
@@ -155,68 +144,6 @@ class TransactionTest(unittest.TestCase):
         mock_order.replace.assert_called_with(1.01)
         mock__validate_controls.assert_not_called()
         self.transaction._pending_replace = [(mock_order, None)]
-        self.assertTrue(self.transaction._pending_orders)
-
-    @mock.patch("flumine.execution.transaction.Transaction._create_order_package")
-    def test_execute(self, mock__create_order_package):
-        self.transaction._pending_orders = True
-        mock_package = mock.Mock()
-        mock__create_order_package.return_value = [mock_package]
-        self.assertEqual(self.transaction.execute(), 0)
-        mock_order = mock.Mock()
-        self.transaction._pending_place = [(mock_order, 1234)]
-        self.transaction._pending_cancel = [(mock_order, None)]
-        self.transaction._pending_update = [(mock_order, None)]
-        self.transaction._pending_replace = [(mock_order, 1234)]
-        self.assertEqual(self.transaction.execute(), 4)
-        mock__create_order_package.assert_has_calls(
-            [
-                call([(mock_order, 1234)], OrderPackageType.PLACE, async_=False),
-                call([(mock_order, None)], OrderPackageType.CANCEL),
-                call([(mock_order, None)], OrderPackageType.UPDATE),
-                call([(mock_order, 1234)], OrderPackageType.REPLACE),
-            ]
-        )
-        self.transaction.market.flumine.process_order_package.assert_has_calls(
-            [
-                call(mock__create_order_package()[0]),
-                call(mock__create_order_package()[0]),
-                call(mock__create_order_package()[0]),
-                call(mock__create_order_package()[0]),
-            ]
-        )
-        self.assertFalse(self.transaction._pending_orders)
-
-    @mock.patch("flumine.execution.transaction.Transaction._create_order_package")
-    def test_execute_async(self, mock__create_order_package):
-        self.transaction._pending_orders = True
-        self.transaction._async_place_orders = True
-        mock_package = mock.Mock()
-        mock__create_order_package.return_value = [mock_package]
-        self.assertEqual(self.transaction.execute(), 0)
-        mock_order = mock.Mock()
-        self.transaction._pending_place = [(mock_order, 1234)]
-        self.transaction._pending_cancel = [(mock_order, None)]
-        self.transaction._pending_update = [(mock_order, None)]
-        self.transaction._pending_replace = [(mock_order, 1234)]
-        self.assertEqual(self.transaction.execute(), 4)
-        mock__create_order_package.assert_has_calls(
-            [
-                call([(mock_order, 1234)], OrderPackageType.PLACE, async_=True),
-                call([(mock_order, None)], OrderPackageType.CANCEL),
-                call([(mock_order, None)], OrderPackageType.UPDATE),
-                call([(mock_order, 1234)], OrderPackageType.REPLACE),
-            ]
-        )
-        self.transaction.market.flumine.process_order_package.assert_has_calls(
-            [
-                call(mock__create_order_package()[0]),
-                call(mock__create_order_package()[0]),
-                call(mock__create_order_package()[0]),
-                call(mock__create_order_package()[0]),
-            ]
-        )
-        self.assertFalse(self.transaction._pending_orders)
 
     def test__validate_controls(self):
         mock_trading_control = mock.Mock()
@@ -244,52 +171,3 @@ class TransactionTest(unittest.TestCase):
         )
         mock_trading_control.assert_called_with(mock_order, mock_package_type)
         mock_client_control.assert_not_called()
-
-    @mock.patch("flumine.execution.transaction.BetfairOrderPackage")
-    def test__create_order_package(self, mock_betfair_order_package):
-        mock_betfair_order_package.order_limit.return_value = 2
-        packages = self.transaction._create_order_package(
-            [(1, None), (2, None), (3, 123), (4, 123), (5, 123)], OrderPackageType.PLACE
-        )
-        mock_betfair_order_package.assert_has_calls(
-            [
-                call(
-                    client=self.transaction._client,
-                    market_id=self.transaction.market.market_id,
-                    orders=[1, 2],
-                    package_type=OrderPackageType.PLACE,
-                    bet_delay=self.transaction.market.market_book.bet_delay,
-                    market_version=None,
-                    async_=False,
-                ),
-                call(
-                    client=self.transaction._client,
-                    market_id=self.transaction.market.market_id,
-                    orders=[3, 4],
-                    package_type=OrderPackageType.PLACE,
-                    bet_delay=self.transaction.market.market_book.bet_delay,
-                    market_version=123,
-                    async_=False,
-                ),
-                call(
-                    client=self.transaction._client,
-                    market_id=self.transaction.market.market_id,
-                    orders=[5],
-                    package_type=OrderPackageType.PLACE,
-                    bet_delay=self.transaction.market.market_book.bet_delay,
-                    market_version=123,
-                    async_=False,
-                ),
-            ]
-        )
-        self.assertEqual(len(packages), 3)
-        mock_betfair_order_package.order_limit.assert_called_with(
-            OrderPackageType.PLACE
-        )
-
-    @mock.patch("flumine.execution.transaction.Transaction.execute")
-    def test_enter_exit(self, mock_execute):
-        with self.transaction as t:
-            self.assertEqual(self.transaction, t)
-            t._pending_orders = True
-        mock_execute.assert_called()

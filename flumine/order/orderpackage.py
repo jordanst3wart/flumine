@@ -18,6 +18,7 @@ class OrderPackageType(Enum):
     UPDATE = "Update"
 
 
+# TODO remove this
 class BaseOrderPackage(BaseEvent):
     """
     Data structure for multiple orders,
@@ -130,6 +131,7 @@ class BaseOrderPackage(BaseEvent):
         return len(self.orders)
 
 
+# TODO remove
 class BetfairOrderPackage(BaseOrderPackage):
     EXCHANGE = ExchangeType.BETFAIR
 
