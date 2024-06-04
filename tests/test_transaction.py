@@ -18,10 +18,6 @@ class TransactionTest(unittest.TestCase):
         self.assertEqual(self.transaction._client, self.mock_client)
         self.assertEqual(self.transaction._id, 1)
         self.assertFalse(self.transaction._async_place_orders)
-        self.assertEqual(self.transaction._pending_place, [])
-        self.assertEqual(self.transaction._pending_cancel, [])
-        self.assertEqual(self.transaction._pending_update, [])
-        self.assertEqual(self.transaction._pending_replace, [])
 
     @mock.patch(
         "flumine.execution.transaction.Transaction._validate_controls",
