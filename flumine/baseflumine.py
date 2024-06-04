@@ -159,6 +159,8 @@ class BaseFlumine:
         # having a blotter per market seems a bit crazy, there can be 200 markets...
         # iterating over all the markets seems a bit dumb...
 
+        # TODO add strategy process
+
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
         logger.info("close market event actually called")
         market_book = event.event
