@@ -20,21 +20,10 @@ class BetfairClient(BaseClient):
     EXCHANGE = ExchangeType.BETFAIR
 
     def login(self) -> Optional[resources.LoginResource]:
-        try:
-            if self.interactive_login:
-                return self.betting_client.login_interactive()
-            else:
-                return self.betting_client.login()
-        except BetfairError as e:
-            logger.error(
-                "BetfairClient `login` error",
-                exc_info=True,
-                extra={
-                    "client": self.betting_client,
-                    "trading_function": "login",
-                    "response": e,
-                },
-            )
+        if self.interactive_login:
+            return self.betting_client.login_interactive()
+        else:
+            return self.betting_client.login()
 
     def keep_alive(self) -> Optional[Union[resources.KeepAliveResource, bool]]:
         if self.betting_client.session_expired:
@@ -54,18 +43,7 @@ class BetfairClient(BaseClient):
             return True
 
     def logout(self) -> Optional[resources.LogoutResource]:
-        try:
-            return self.betting_client.logout()
-        except BetfairError as e:
-            logger.error(
-                "BetfairClient `logout` error",
-                exc_info=True,
-                extra={
-                    "client": self.betting_client,
-                    "trading_function": "logout",
-                    "response": e,
-                },
-            )
+        return self.betting_client.logout()
 
     def update_account_details(self) -> None:
         # get details

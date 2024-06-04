@@ -87,22 +87,19 @@ class Market:
         force: bool = False,
         client=None,
     ) -> bool:
-        with self.transaction(client=client) as t:
-            return t.place_order(order, market_version, execute, force)
+        return self.transaction(client=client).place_order(order, market_version, execute, force)
 
     # library function
     def cancel_order(
         self, order: BetfairOrder, size_reduction: float = None, force: bool = False
     ) -> bool:
-        with self.transaction(client=order.client) as t:
-            return t.cancel_order(order, size_reduction, force)
+        return self.transaction(client=order.client).cancel_order(order, size_reduction, force)
 
     # library function
     def update_order(
         self, order: BetfairOrder, new_persistence_type: str, force: bool = False
     ) -> bool:
-        with self.transaction(client=order.client) as t:
-            return t.update_order(order, new_persistence_type, force)
+        return self.transaction(client=order.client).update_order(order, new_persistence_type, force)
 
     # library function
     def replace_order(
@@ -112,8 +109,7 @@ class Market:
         market_version: int = None,
         force: bool = False,
     ) -> bool:
-        with self.transaction(client=order.client) as t:
-            return t.replace_order(order, new_price, market_version, force)
+        return self.transaction(client=order.client).replace_order(order, new_price, market_version, force)
 
     @property
     def event(self) -> dict:
