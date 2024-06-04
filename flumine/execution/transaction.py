@@ -2,7 +2,7 @@ import logging
 
 from ..clients.baseclient import BaseClient
 from ..order.order import BetfairOrder
-from ..order.orderpackage import OrderPackageType, BetfairOrderPackage
+from ..order.orderpackage import OrderPackageType
 from ..exceptions import ControlError
 
 logger = logging.getLogger(__name__)
