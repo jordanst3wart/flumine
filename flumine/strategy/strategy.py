@@ -49,7 +49,6 @@ class BaseStrategy:
         """
         :param market_filter: Streaming market filter dict or list of market filters
         :param market_data_filter: Streaming market data filter
-        :param sports_data_filter: Streaming sports data filter (e.g. ["raceSubscription"])
         :param streaming_timeout: Streaming timeout in seconds, will call snap() on cache
         :param conflate_ms: Streaming conflation
         :param stream_class: Can be Market or Data (raw)
@@ -75,28 +74,24 @@ class BaseStrategy:
         self.name_hash = create_cheap_hash(self.name, STRATEGY_NAME_HASH_LENGTH)
 
     def add(self, flumine) -> None:
-        # called when strategy is added to framework
         return
 
     def start(self, flumine) -> None:
-        # called when flumine starts but before streams start
-        # e.g. subscribe to extra streams
         return
 
     def process_new_market(self, market: Market, market_book: MarketBook) -> None:
-        # called when a market is newly added to the framework
         return
 
     def check_market_book(self, market: Market, market_book: MarketBook) -> bool:
-        # process_market_book only executed if this returns True
         return False
 
     def process_market_book(self, market: Market, market_book: MarketBook) -> None:
-        # process marketBook; place/cancel/replace orders
         return
 
     def process_closed_market(self, market: Market, market_book: MarketBook) -> None:
-        # process marketBook after closure
+        return
+
+    def process_orders(self, market: Market, orders: list) -> None:
         return
 
     def finish(self, flumine) -> None:

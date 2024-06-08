@@ -158,8 +158,12 @@ class BaseFlumine:
         # rather than keeping the orders with the blotter with the market...?
         # having a blotter per market seems a bit crazy, there can be 200 markets...
         # iterating over all the markets seems a bit dumb...
-
-        # TODO add strategy process
+        for market in self.markets:
+            if market.closed is False and market.blotter.active:
+                for strategy in self.strategies:
+                    strategy_orders = market.blotter.strategy_orders(strategy)
+                    if strategy_orders:
+                        strategy.process_orders(market, strategy_orders)
 
     def _process_close_market(self, event: events.CloseMarketEvent) -> None:
         logger.info("close market event actually called")

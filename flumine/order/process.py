@@ -43,6 +43,7 @@ def process_current_orders(markets: Markets, event: events.CurrentOrdersEvent) -
                 if order in market.blotter.live_orders:
                     market.blotter.complete_order(order)
 
+
 # this function makes no sense to me
 def process_current_order(order: BaseOrder, current_order) -> None:
     # update
