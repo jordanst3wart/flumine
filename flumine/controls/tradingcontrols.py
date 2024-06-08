@@ -1,9 +1,8 @@
 import logging
 
 from .basecontrol import BaseControl
-from ..order.order import BaseOrder
 from ..order.ordertype import OrderTypes
-from ..order.orderpackage import OrderPackageType
+from ..order.orderpackage import OrderPackageType, BaseOrder
 
 logger = logging.getLogger(__name__)
 
