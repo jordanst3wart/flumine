@@ -149,6 +149,19 @@ class BaseOrder:
     def replace(self, new_price: float) -> None:
         raise NotImplementedError
 
+    # instructions
+    def create_place_instruction(self) -> dict:
+        raise NotImplementedError
+
+    def create_cancel_instruction(self) -> dict:
+        raise NotImplementedError
+
+    def create_update_instruction(self) -> dict:
+        raise NotImplementedError
+
+    def create_replace_instruction(self) -> dict:
+        raise NotImplementedError
+
     # currentOrder
     def update_current_order(self, current_order: CurrentOrder) -> None:
         self.responses.current_order = current_order
@@ -364,7 +377,48 @@ class BetfairOrder(BaseOrder):
                 "Only LIMIT or LIMIT_ON_CLOSE orders can be replaced"
             )
 
-    # TODO is this used???
+    # instructions
+    def create_place_instruction(self) -> dict:
+        if self.order_type.ORDER_TYPE == OrderTypes.LIMIT:
+            return {
+                "customerOrderRef": self.customer_order_ref,
+                "selectionId": self.selection_id,
+                "side": self.side,
+                "orderType": "LIMIT",
+                "limitOrder": self.order_type.place_instruction(),
+            }
+        elif self.order_type.ORDER_TYPE == OrderTypes.LIMIT_ON_CLOSE:
+            return {
+                "customerOrderRef": self.customer_order_ref,
+                "selectionId": self.selection_id,
+                "side": self.side,
+                "orderType": "LIMIT_ON_CLOSE",
+                "limitOnCloseOrder": self.order_type.place_instruction(),
+            }
+        elif self.order_type.ORDER_TYPE == OrderTypes.MARKET_ON_CLOSE:
+            return {
+                "customerOrderRef": self.customer_order_ref,
+                "selectionId": self.selection_id,
+                "side": self.side,
+                "orderType": "MARKET_ON_CLOSE",
+                "marketOnCloseOrder": self.order_type.place_instruction(),
+            }
+
+    def create_cancel_instruction(self) -> dict:
+        return {
+            "betId": self.bet_id,
+            "sizeReduction": self.update_data.get("size_reduction"),
+        }
+
+    def create_update_instruction(self) -> dict:
+        return {
+            "betId": self.bet_id,
+            "newPersistenceType": self.order_type.persistence_type,
+        }
+
+    def create_replace_instruction(self) -> dict:
+        return {"betId": self.bet_id, "newPrice": self.update_data["new_price"]}
+
     # currentOrder
     @property
     def average_price_matched(self) -> float:

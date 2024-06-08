@@ -78,7 +78,6 @@ class Market:
             client=client,
         )
 
-    # library function
     def place_order(
         self,
         order: BetfairOrder,
@@ -89,19 +88,16 @@ class Market:
     ) -> bool:
         return self.transaction(client=client).place_order(order, market_version, execute, force)
 
-    # library function
     def cancel_order(
         self, order: BetfairOrder, size_reduction: float = None, force: bool = False
     ) -> bool:
         return self.transaction(client=order.client).cancel_order(order, size_reduction, force)
 
-    # library function
     def update_order(
         self, order: BetfairOrder, new_persistence_type: str, force: bool = False
     ) -> bool:
         return self.transaction(client=order.client).update_order(order, new_persistence_type, force)
 
-    # library function
     def replace_order(
         self,
         order: BetfairOrder,

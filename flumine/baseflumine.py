@@ -57,6 +57,8 @@ class BaseFlumine:
     def add_client(self, client: BaseClient) -> None:
         self.clients.add_client(client)
         self.streams.add_client(client)
+        # add execution
+        client.add_execution()  # TODO fix this function
 
     def add_strategy(self, strategy: BaseStrategy) -> None:
         logger.info("Adding strategy %s", strategy)
@@ -70,9 +72,6 @@ class BaseFlumine:
     def add_trading_control(self, trading_control: Type[BaseControl], **kwargs) -> None:
         logger.info("Adding trading control %s", trading_control.NAME)
         self.trading_controls.append(trading_control(self, **kwargs))
-
-    # TODO put back in process_order
-    # https://github.com/betcode-org/flumine/blob/master/docs/index.md
 
     def _add_default_workers(self) -> None:
         return
@@ -115,6 +114,11 @@ class BaseFlumine:
 
                     if strategy.check_market_book(market, market_book):
                         strategy.process_market_book(market, market_book)
+                        # utils.call_strategy_error_handling(
+
+    def process_order_package(self, order_package) -> None:
+        """Execute through client."""
+        order_package.client.execution.handler(order_package)
 
     def _add_market(self, market_id: str, market_book: resources.MarketBook) -> Market:
         logger.debug("Adding: %s to markets", market_id)
@@ -281,6 +285,9 @@ class BaseFlumine:
             w.shutdown()
         # shutdown streams
         self.streams.stop()
+        # shutdown thread pools
+        self.simulated_execution.shutdown()
+        self.betfair_execution.shutdown()
         # logout
         self.clients.logout()
         self._running = False
